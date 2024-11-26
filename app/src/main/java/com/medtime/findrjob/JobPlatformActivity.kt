@@ -1,48 +1,66 @@
 package com.medtime.findrjob
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.Firebase
+import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 
 class JobPlatformActivity : AppCompatActivity() {
-    @SuppressLint("SetTextI18n")
+    private lateinit var jobProvider: ImageView
+    private lateinit var jobSeeker: ImageView
+    private lateinit var aboutMe: ImageView
+    private lateinit var accountDetails: ImageView
+    private lateinit var toolbar: Toolbar
+    private lateinit var logout: ImageButton
+    private var userId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_job_platform)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        val logoutBtn = findViewById<Button>(R.id.logout)
-        val textView = findViewById<TextView>(R.id.textView)
 
-        val auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            startActivity(Intent(this, MainActivity::class.java))
+        aboutMe = findViewById(R.id.realProfileImage)
+        accountDetails = findViewById(R.id.accountDetailsImage)
+        logout = findViewById(R.id.logoutButton)
+        jobProvider = findViewById(R.id.jobProviderImage)
+        jobSeeker = findViewById(R.id.jobSeekerImage)
+        toolbar = findViewById(R.id.custom_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "FindR Job Platform"
+
+        userId = intent.getStringExtra("userId")
+
+        accountDetails.setOnClickListener {
+            val accountDetailsIntent = Intent(this, AccountDetails::class.java)
+            accountDetailsIntent.putExtra("userId", userId)
+            startActivity(accountDetailsIntent)
+        }
+
+        aboutMe.setOnClickListener {
+            val aboutMeIntent = Intent(this, AboutMe::class.java)
+            startActivity(aboutMeIntent)
             finish()
-        }else{
-            textView.text = "Welcome\n ${currentUser.email}"
         }
 
-
-        logoutBtn.setOnClickListener{
-            auth.signOut()
-            startActivity(Intent(this, MainActivity::class.java))
+        logout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            val logoutIntent = Intent(this, UserLogin::class.java)
+            startActivity(logoutIntent)
             finish()
         }
 
+        jobSeeker.setOnClickListener {
+            val jobSeekerIntent = Intent(this, JobSeeker::class.java)
+            startActivity(jobSeekerIntent)
+        }
 
-
+        jobProvider.setOnClickListener {
+            val jobProviderIntent = Intent(this, JobProvider::class.java)
+            startActivity(jobProviderIntent)
+        }
     }
 }

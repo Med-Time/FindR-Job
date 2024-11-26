@@ -1,0 +1,77 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/fullName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:paddingBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:paddingBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/contactDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact Detail"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:paddingBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/emailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email Address"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:paddingBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/cvUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CV URL"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:paddingBottom="8dp"
+            android:autoLink="web"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <Button
+            android:id="@+id/btnDownloadCv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download CV"
+            android:textStyle="bold"
+            android:background="@color/black"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

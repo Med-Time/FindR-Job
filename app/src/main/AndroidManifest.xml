@@ -13,6 +13,24 @@
         android:theme="@style/Theme.FindRJob"
         tools:targetApi="31">
         <activity
+            android:name=".AboutMe"
+            android:exported="false" />
+        <activity
+            android:name=".EditJobPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JobProviderDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JobApplicationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JobProvider"
+            android:exported="false" />
+        <activity
+            android:name=".JobSeeker"
+            android:exported="false" />
+        <activity
             android:name=".ForgotPassword"
             android:exported="false" />
         <activity

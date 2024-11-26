@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.litert.metadata)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -55,4 +57,5 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.firebaseui:firebase-ui-database:8.0.0")
 }

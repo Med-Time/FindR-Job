@@ -23,5 +23,6 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="logout">Log Out</string>
     <string name="goggle">Continue with Google</string>
+    <string name="name">FindR Job</string>
 
 </resources>
