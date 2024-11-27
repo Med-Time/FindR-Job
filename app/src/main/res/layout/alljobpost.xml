@@ -1,0 +1,64 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="25dp"
+    android:elevation="35dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/alljobTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Job Title"
+            android:textSize="28sp"
+            android:gravity="center"
+            android:textStyle="bold|italic"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/alljobDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Job Description"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp"/>
+        <TextView
+            android:id="@+id/alljobDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="8/12/2024"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp"/>
+
+        <TextView
+            android:id="@+id/alljobSkills"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Skills Required"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp"/>
+
+        <TextView
+            android:id="@+id/alljobSalary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salary"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Apply"
+            android:id="@+id/allJobPostApllyButton"
+            android:backgroundTint="#27D02E"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

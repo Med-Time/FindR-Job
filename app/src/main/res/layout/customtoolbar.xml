@@ -18,6 +18,6 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_gravity="end"
 
-        android:contentDescription="@string/logout"/>
+        android:contentDescription="Logout"/>
 
 </androidx.appcompat.widget.Toolbar>

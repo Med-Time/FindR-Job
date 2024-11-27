@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
+        android:text="FindR Job Application"
         android:gravity="center"
         android:layout_marginTop="20dp"
         android:textSize="28sp"
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/fill_form"
+                android:text="Please fill in the form below to apply for a position."
                 android:textSize="20sp"
                 android:layout_marginBottom="20dp"
                 android:textStyle="italic"
@@ -54,21 +54,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:autofillHints=""
-                android:hint="@string/full_name"
+                android:hint="Full Name"
                 android:inputType="textPersonName"
-                android:minHeight="48dp"
-                android:textColorHint="#757575" />
+                android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:autofillHints=""
-                android:hint="@string/address"
+                android:hint="Address"
                 android:inputType="textPostalAddress"
-                android:textColorHint="#757575"
                 android:minHeight="48dp" />
 
             <EditText
@@ -76,53 +72,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:autofillHints=""
-                android:hint="@string/contact_detail"
+                android:hint="Contact Detail"
                 android:inputType="phone"
-                android:minHeight="48dp"
-                android:textColorHint="#757575" />
+                android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/emailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:autofillHints=""
-                android:hint="@string/email"
+                android:hint="Email Address"
                 android:inputType="textEmailAddress"
-                android:minHeight="48dp"
-                android:textColorHint="#757575" />
+                android:minHeight="48dp" />
 
             <Button
                 android:id="@+id/selectFileButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Select CV"
                 android:layout_marginBottom="20dp"
-                android:backgroundTint="#FF9800"
-                android:text="@string/select_cv"
-                android:textColor="#424242" />
+                android:backgroundTint="#FF9800"/>
 
             <TextView
                 android:id="@+id/selectedFileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/no_file_selected"
+                android:text="No file selected"
                 android:layout_marginBottom="20dp"
                 android:gravity="center"/>
 
             <Button
                 android:id="@+id/submitApplication"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="20dp"
                 android:backgroundTint="#27D02E"
-                android:minWidth="128dp"
-                android:minHeight="58dp"
-                android:text="@string/submit_application"
-                android:textColor="#795548"
+                android:minHeight="48dp"
+                android:text="Submit Application"
                 android:textStyle="bold" />
-
+<!--changed margintop of above button check once /-->
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
