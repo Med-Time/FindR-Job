@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="12dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -76,7 +76,6 @@
                     android:autofillHints=""
                     android:background="@drawable/edittextback"
                     android:hint="@string/enter_email"
-
                     android:inputType="textEmailAddress"
                     tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -133,17 +132,17 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/google_login_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="282dp"
+                    android:layout_height="55dp"
                     android:layout_marginTop="5dp"
                     android:backgroundTint="#4285F4"
+                    android:drawableLeft="@drawable/google_icon"
                     android:paddingVertical="12dp"
                     android:text="@string/goggle"
-                    android:textSize="20sp"
                     android:textColor="@android:color/white"
+                    android:textSize="15sp"
                     app:strokeColor="#1A73E8"
-                    app:strokeWidth="1dp"
-                    android:drawableLeft="@drawable/google_icon" />
+                    app:strokeWidth="1dp" />
 
                 <TextView
                     android:layout_width="wrap_content"

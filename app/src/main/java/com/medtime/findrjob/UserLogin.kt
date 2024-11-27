@@ -16,7 +16,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import de.hdodenhof.circleimageview.CircleImageView
 
 class UserLogin : AppCompatActivity() {
 
@@ -37,7 +36,7 @@ class UserLogin : AppCompatActivity() {
         super.onStart()
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
-            intent = Intent(applicationContext, JobPlatformActivity::class.java)
+            intent = Intent(applicationContext, JobApplicationActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -91,7 +90,7 @@ class UserLogin : AppCompatActivity() {
                             userId = currentUser.uid
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
 
-                            val intent = Intent(applicationContext, JobPlatformActivity::class.java)
+                            val intent = Intent(applicationContext, JobApplicationActivity::class.java)
                             intent.putExtra("userId", userId)
                             startActivity(intent)
                             finish()
@@ -149,7 +148,7 @@ class UserLogin : AppCompatActivity() {
                         userId = currentUser.uid
                         Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(applicationContext, JobPlatformActivity::class.java)
+                        val intent = Intent(applicationContext, JobApplicationActivity::class.java)
                         intent.putExtra("userId", userId)
                         startActivity(intent)
                         finish()
