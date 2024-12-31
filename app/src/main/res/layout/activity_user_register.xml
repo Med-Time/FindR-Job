@@ -53,10 +53,36 @@
                 android:textStyle="bold|italic"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <RadioGroup
+                android:id="@+id/userTypeGroup"
+                android:layout_width="316dp"
+                android:layout_height="59dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.492"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RadioButton
+                    android:id="@+id/providerRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
+                    android:text="@string/job_provider"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/seekerRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/job_seeker"
+                    android:textSize="16sp" />
+            </RadioGroup>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="5dp">
 
                 <EditText
                     android:id="@+id/txt_fullname"

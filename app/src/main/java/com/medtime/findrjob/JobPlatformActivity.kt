@@ -35,14 +35,15 @@ class JobPlatformActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId")
 
         accountDetails.setOnClickListener {
-            val accountDetailsIntent = Intent(this, AccountDetails::class.java)
+            val accountDetailsIntent = Intent(this, SeekerAccountDetails::class.java)
             accountDetailsIntent.putExtra("userId", userId)
             startActivity(accountDetailsIntent)
+            finish()
         }
 
         aboutMe.setOnClickListener {
-            val aboutMeIntent = Intent(this, AboutMe::class.java)
-            startActivity(aboutMeIntent)
+            val aboutUsIntent = Intent(this, AboutUs::class.java)
+            startActivity(aboutUsIntent)
             finish()
         }
 

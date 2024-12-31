@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +27,7 @@ class UserLogin : AppCompatActivity() {
     private lateinit var password: EditText
     private lateinit var btnLogin: Button
     private lateinit var googleLoginButton: Button
+    private lateinit var userTypeGroup: RadioGroup
     private lateinit var loginProgress: ProgressBar
     private lateinit var firebaseAuth: FirebaseAuth
     private var userId: String? = null
@@ -36,7 +39,7 @@ class UserLogin : AppCompatActivity() {
         super.onStart()
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
-            intent = Intent(applicationContext, JobApplicationActivity::class.java)
+            intent = Intent(applicationContext, JobPlatformActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -51,16 +54,17 @@ class UserLogin : AppCompatActivity() {
         register = findViewById(R.id.txt_register)
         email = findViewById(R.id.email)
         password = findViewById(R.id.password)
+        userTypeGroup = findViewById(R.id.userTypeGroup)
         btnLogin = findViewById(R.id.btn_login)
         googleLoginButton = findViewById(R.id.google_login_button)
         loginProgress = findViewById(R.id.userLoginProgressbar)
         firebaseAuth = FirebaseAuth.getInstance()
-
         // Configure Google Sign-In
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
+
 
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
 
@@ -81,6 +85,12 @@ class UserLogin : AppCompatActivity() {
             if (passwordInput.isEmpty()) {
                 Toast.makeText(this, "Please Enter Your Password", Toast.LENGTH_SHORT).show()
             }
+            val selectedUserTypeId = userTypeGroup.checkedRadioButtonId
+            if (selectedUserTypeId == -1) {
+                Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val selectedUserType = findViewById<RadioButton>(selectedUserTypeId).text.toString()
 
             firebaseAuth.signInWithEmailAndPassword(emailInput, passwordInput)
                 .addOnCompleteListener { task ->
@@ -89,17 +99,37 @@ class UserLogin : AppCompatActivity() {
                         if (currentUser != null && currentUser.isEmailVerified) {
                             userId = currentUser.uid
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+                            when (selectedUserType) {
+                                "Job Seeker" -> {
+                                    val intent =
+                                        Intent(applicationContext, SeekerAccountDetails::class.java)
+                                    intent.putExtra("userId", userId)
+                                    startActivity(intent)
+                                    finish()
+                                }
 
-                            val intent = Intent(applicationContext, JobApplicationActivity::class.java)
-                            intent.putExtra("userId", userId)
-                            startActivity(intent)
-                            finish()
+                                "Job Provider" -> {
+                                    val intent = Intent(
+                                        applicationContext,
+                                        ProviderAccountDetails::class.java
+                                    )
+                                    intent.putExtra("userId", userId)
+                                    startActivity(intent)
+                                    finish()
+                                }
+
+                                else -> {
+                                    loginProgress.visibility = View.VISIBLE
+                                    Toast.makeText(
+                                        this,
+                                        "Please Verify Your Email Address",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         } else {
-                            loginProgress.visibility = View.VISIBLE
-                            Toast.makeText(this, "Please Verify Your Email Address", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
@@ -148,7 +178,7 @@ class UserLogin : AppCompatActivity() {
                         userId = currentUser.uid
                         Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(applicationContext, JobApplicationActivity::class.java)
+                        val intent = Intent(applicationContext, JobPlatformActivity::class.java)
                         intent.putExtra("userId", userId)
                         startActivity(intent)
                         finish()
@@ -157,5 +187,14 @@ class UserLogin : AppCompatActivity() {
                     Toast.makeText(this, "Google Sign-In Failed", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+    private fun handleRadioButtonSelection(checkedId: Int) {
+        val selectedRadioButton = findViewById<android.widget.RadioButton>(checkedId)
+        val selectedText = selectedRadioButton.text.toString()
+        showToast("Selected: $selectedText")
+
+    }
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

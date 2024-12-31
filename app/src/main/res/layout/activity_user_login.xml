@@ -6,36 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#F4ECEC"
+    android:background="@drawable/background"
     tools:context=".UserLogin">
 
-    <!-- Welcome Text -->
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="@string/welcome"
-        android:textSize="32sp"
-        android:textStyle="bold"
+    <RadioGroup
+        android:id="@+id/userTypeGroup"
+        android:layout_width="316dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="48dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:src="@drawable/userlogin2"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#FF000000"
-        app:layout_constraintTop_toBottomOf="@id/welcome_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <RadioButton
+            android:id="@+id/providerRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:text="@string/job_provider"
+            android:textSize="16sp" />
 
-    <!-- CardView with form -->
+        <RadioButton
+            android:id="@+id/seekerRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/job_seeker"
+            android:textSize="16sp" />
+    </RadioGroup>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
         android:layout_width="0dp"
@@ -47,13 +47,13 @@
         app:cardElevation="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_image">
+        app:layout_constraintTop_toBottomOf="@id/userTypeGroup">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -76,6 +76,7 @@
                     android:autofillHints=""
                     android:background="@drawable/edittextback"
                     android:hint="@string/enter_email"
+
                     android:inputType="textEmailAddress"
                     tools:ignore="VisualLintTextFieldSize" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -125,48 +126,53 @@
             <!-- Google Login Section -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/google_login_button"
-                    android:layout_width="282dp"
-                    android:layout_height="55dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:backgroundTint="#4285F4"
                     android:drawableLeft="@drawable/google_icon"
                     android:paddingVertical="12dp"
                     android:text="@string/goggle"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp"
+                    android:textSize="20sp"
                     app:strokeColor="#1A73E8"
                     app:strokeWidth="1dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center"
-                    android:text="@string/dont_account"
-                    android:textColor="#757575"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/txt_register"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center"
-                    android:text="@string/register_now"
-                    android:textColor="#0EA011"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
             </LinearLayout>
             <!-- Register Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/dont_account"
+                android:textColor="#757575"
+                android:textSize="14sp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txt_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/register_now"
+                android:textColor="#0EA011"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <!-- ProgressBar -->

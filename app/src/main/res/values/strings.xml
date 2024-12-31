@@ -24,5 +24,13 @@
     <string name="logout">Log Out</string>
     <string name="goggle">Continue with Google</string>
     <string name="name">FindR Job</string>
+    <string name="job_provider">Job Provider</string>
+    <string name="job_seeker">Job Seeker</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="tagline">By MedTime</string>
 
 </resources>

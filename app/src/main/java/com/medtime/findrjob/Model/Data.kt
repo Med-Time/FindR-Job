@@ -1,7 +1,4 @@
-package com.medtime.Model
-
-//class Data {
-//}
+package com.medtime.findrjob.Model
 
 public class Data(
     var title: String = "",

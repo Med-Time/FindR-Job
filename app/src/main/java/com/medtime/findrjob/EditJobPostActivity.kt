@@ -5,8 +5,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.medtime.Model.Data
 import com.google.firebase.database.*
+import com.medtime.findrjob.Model.Data
 
 class EditJobPostActivity : AppCompatActivity() {
 
