@@ -5,6 +5,7 @@ data class ApplicationData(
     var address: String = "",
     var contact: String = "",
     var email: String = "",
-    var id: String = "",
+    var applicantId: String = "",
+    var providerId: String="",
     var cvUrl: String = ""  // Added to store the CV URL
 )

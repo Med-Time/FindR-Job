@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
-class AboutMe : AppCompatActivity() {
+class AboutUs : AppCompatActivity() {
     private lateinit var imgInsta: ImageView
     private lateinit var imgTwitter: ImageView
     private lateinit var imgYoutube: ImageView

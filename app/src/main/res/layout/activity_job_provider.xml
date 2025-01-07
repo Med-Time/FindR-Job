@@ -32,7 +32,35 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <Button
+                android:id="@+id/button_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                android:layout_margin="16dp"
+                android:backgroundTint="#FF9800"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
 
+            <Button
+                android:id="@+id/button_add_job"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Jobs"
+                android:layout_margin="16dp"
+                android:backgroundTint="#FF9800"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/button_manage_jobs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Manage Jobs"
+                android:layout_margin="16dp"
+                android:backgroundTint="#FF9800"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"/>
             <Button
                 android:id="@+id/button_view_applications"
                 android:layout_width="match_parent"
@@ -42,11 +70,6 @@
                 android:backgroundTint="#FF9800"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/recycler_job_post_id"/>
 
         </LinearLayout>
 

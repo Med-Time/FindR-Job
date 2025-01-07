@@ -3,11 +3,7 @@ package com.medtime.findrjob
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +20,7 @@ class UserRegister : AppCompatActivity() {
     private lateinit var email: EditText
     private lateinit var password: EditText
     private lateinit var cpassword: EditText
+    private lateinit var userTypeGroup: RadioGroup
     private lateinit var registerprogress: ProgressBar
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var userDatabase: DatabaseReference
@@ -37,6 +34,7 @@ class UserRegister : AppCompatActivity() {
             finish()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,6 +47,7 @@ class UserRegister : AppCompatActivity() {
         email = findViewById(R.id.txt_email)
         password = findViewById(R.id.txt_password)
         cpassword = findViewById(R.id.txt_cpassword)
+        userTypeGroup = findViewById(R.id.userTypeGroup)
         registerprogress = findViewById(R.id.userRegisterProgressbar)
 
         // Firebase initialization
@@ -78,11 +77,24 @@ class UserRegister : AppCompatActivity() {
                 Toast.makeText(this, "Password do not match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+//            registerprogress.visibility = View.VISIBLE
+            dialogBox("Fullname: $Fullname Email: $Email  Password: $Password")
+
+            // Get selected user type
+            val selectedUserTypeId = userTypeGroup.checkedRadioButtonId
+            if (selectedUserTypeId == -1) {
+                Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val selectedUserType = findViewById<RadioButton>(selectedUserTypeId).text.toString()
+            Toast.makeText(this, selectedUserType, Toast.LENGTH_SHORT).show()
 
             // Firebase authentication
             firebaseAuth.createUserWithEmailAndPassword(Email, Password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+                        Toast.makeText(this, "E-mail Created", Toast.LENGTH_SHORT).show()
                         firebaseAuth.currentUser?.sendEmailVerification()
                             ?.addOnCompleteListener { verificationTask ->
                                 if (verificationTask.isSuccessful) {
@@ -94,7 +106,21 @@ class UserRegister : AppCompatActivity() {
                                         userDatabase.child(it).setValue(newUser)
                                             .addOnCompleteListener { saveTask ->
                                                 if (saveTask.isSuccessful) {
-                                                    Toast.makeText(this, "Registration Successful. Please Verify Your Email", Toast.LENGTH_SHORT).show()
+                                                    // Redirect based on user type
+                                                    if (selectedUserType == "Job Seeker") {
+                                                        val intent = Intent(this, GetSeekerDetails::class.java)
+                                                        Toast.makeText(this, "Inside Seeker Next is get Seeker Details", Toast.LENGTH_SHORT).show()
+                                                        intent.putExtra("userId", userId)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    } else if (selectedUserType == "Job Provider") {
+                                                        val intent = Intent(this, GetProviderDetails::class.java)
+                                                        Toast.makeText(this, "Inside Provider Next is get Seeker Details", Toast.LENGTH_SHORT).show()
+                                                        intent.putExtra("userId", userId)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    }
+//                                                    finish()
                                                 } else {
                                                     Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show()
                                                 }
@@ -108,7 +134,6 @@ class UserRegister : AppCompatActivity() {
                     } else {
                         val errorMessage = task.exception?.message
                         Toast.makeText(this, "Registration Failed: $errorMessage", Toast.LENGTH_LONG).show()
-
                     }
                 }
         }
@@ -118,10 +143,11 @@ class UserRegister : AppCompatActivity() {
             startActivity(loginIntent)
         }
     }
+
     // Function to show a dialog box(for debugging)
     private fun dialogBox(msg: String) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Reason")
+        builder.setTitle("Confirmation")
         builder.setMessage(msg)
         builder.setPositiveButton("OK") { dialog, _ ->
             dialog.dismiss()

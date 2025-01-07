@@ -2,6 +2,7 @@ package com.medtime.findrjob
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -35,14 +36,15 @@ class JobPlatformActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId")
 
         accountDetails.setOnClickListener {
-            val accountDetailsIntent = Intent(this, AccountDetails::class.java)
+            val accountDetailsIntent = Intent(this, SeekerAccountDetails::class.java)
             accountDetailsIntent.putExtra("userId", userId)
             startActivity(accountDetailsIntent)
+            finish()
         }
 
         aboutMe.setOnClickListener {
-            val aboutMeIntent = Intent(this, AboutMe::class.java)
-            startActivity(aboutMeIntent)
+            val aboutUsIntent = Intent(this, AboutUs::class.java)
+            startActivity(aboutUsIntent)
             finish()
         }
 
@@ -60,6 +62,7 @@ class JobPlatformActivity : AppCompatActivity() {
 
         jobProvider.setOnClickListener {
             val jobProviderIntent = Intent(this, JobProvider::class.java)
+            Log.d("Going", "To the next Activity")
             startActivity(jobProviderIntent)
         }
     }
