@@ -14,13 +14,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.FindRJob"
-        android:enableOnBackInvokedCallback="true"
-        tools:targetApi="tiramisu">
+        tools:targetApi="31">
         <activity
             android:name=".JobSeekerDashboard"
             android:exported="false" />
+        <activity android:name=".SeekerAccountDetails"
+            android:exported="false"
+            android:theme="@style/Theme.FindRJob" />
         <activity
-            android:name=".SelectUserType"
+            android:name=".JobPostAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".ItemJobApplication"
+            android:exported="false" />
+        <activity
+            android:name=".EditJobItem"
             android:exported="false" />
         <activity
             android:name=".ProviderAccountDetails"
@@ -32,10 +40,6 @@
         <activity
             android:name=".GetSeekerDetails"
             android:exported="false" />
-        <activity
-            android:name=".SeekerAccountDetails"
-            android:exported="false"
-            android:theme="@style/Theme.FindRJob" />
         <activity
             android:name=".Welcome"
             android:exported="true">
