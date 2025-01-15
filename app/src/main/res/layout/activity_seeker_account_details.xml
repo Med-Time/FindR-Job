@@ -56,9 +56,10 @@
             android:id="@+id/editTextName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Full Name"
             android:inputType="textPersonName"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Email -->
         <TextView
@@ -72,9 +73,10 @@
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Education -->
         <TextView
@@ -87,9 +89,10 @@
             android:id="@+id/editTextEducation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Enter your Qualifications"
             android:inputType="text"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Location -->
         <TextView
@@ -103,9 +106,10 @@
             android:id="@+id/editTextLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Enter your Location"
             android:inputType="textPostalAddress"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Skills -->
         <TextView
@@ -119,9 +123,10 @@
             android:id="@+id/editTextSkills"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Skills"
             android:inputType="text"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Job Preferences -->
         <TextView
@@ -135,9 +140,10 @@
             android:id="@+id/editTextPreferences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:hint="Enter your job preferences"
             android:inputType="text"
-            android:enabled="false" />
+            android:minHeight="48dp" />
 
         <!-- Resume Interaction -->
         <TextView

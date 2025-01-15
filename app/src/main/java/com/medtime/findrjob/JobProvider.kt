@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.medtime.findrjob.Model.Data
+import com.medtime.findrjob.model.JobPostData
 
 class JobProvider : AppCompatActivity() {
     private lateinit var btnfloat: FloatingActionButton
@@ -63,11 +63,11 @@ class JobProvider : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val options = FirebaseRecyclerOptions.Builder<Data>()
-            .setQuery(JobPostDatabase, Data::class.java)
+        val options = FirebaseRecyclerOptions.Builder<JobPostData>()
+            .setQuery(JobPostDatabase, JobPostData::class.java)
             .build()
-        val adapter = object : FirebaseRecyclerAdapter<Data, MyViewHolder>(options) {
-            override fun onBindViewHolder(holder: MyViewHolder, position: Int, model: Data) {
+        val adapter = object : FirebaseRecyclerAdapter<JobPostData, MyViewHolder>(options) {
+            override fun onBindViewHolder(holder: MyViewHolder, position: Int, model: JobPostData) {
                 holder.setJobTitle(model.title)
                 holder.setJobDate(model.date)
                 holder.setJobDescription(model.description)

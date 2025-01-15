@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.medtime.Model.ApplicationData
 import com.google.firebase.database.*
+import com.medtime.findrjob.model.ApplicationData
 import kotlin.collections.ArrayList
 
 class JobProviderDashboardActivity : AppCompatActivity() {

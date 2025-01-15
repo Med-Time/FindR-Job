@@ -15,17 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.medtime.findrjob.Model.Data
+import com.google.firebase.database.*
+import com.medtime.findrjob.model.JobPostData
 
 class JobSeeker : AppCompatActivity() {
 
     private lateinit var toolbar: Toolbar
     private lateinit var recyclerView: RecyclerView
-    private lateinit var mAllJobPost: DatabaseReference
-    private lateinit var adapter: FirebaseRecyclerAdapter<Data, AllJobPostViewHolder>
+    private lateinit var jobPost: DatabaseReference
+    private lateinit var providerRef: DatabaseReference
+    private lateinit var adapter: FirebaseRecyclerAdapter<JobPostData, AllJobPostViewHolder>
     private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +33,7 @@ class JobSeeker : AppCompatActivity() {
 
         toolbar = findViewById(R.id.alljobpostToolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "All Job Post"
+        supportActionBar?.title = "All Job Posts"
 
         searchView = findViewById(R.id.searchView)
 
@@ -49,8 +48,10 @@ class JobSeeker : AppCompatActivity() {
         val dividerItemDecoration = DividerItemDecoration(recyclerView.context, linearLayoutManager.orientation)
         recyclerView.addItemDecoration(dividerItemDecoration)
 
-        mAllJobPost = FirebaseDatabase.getInstance().reference.child("Public database")
-        mAllJobPost.keepSynced(true)
+        jobPost = FirebaseDatabase.getInstance().reference.child("Job Post")
+        providerRef = FirebaseDatabase.getInstance().reference.child("Providers") // Provider companyName data
+
+        jobPost.keepSynced(true)
 
         setupAdapter("")
 
@@ -68,24 +69,38 @@ class JobSeeker : AppCompatActivity() {
     }
 
     private fun setupAdapter(query: String) {
-        val firebaseSearchQuery: Query = mAllJobPost.orderByChild("title")
+        val firebaseSearchQuery: Query = jobPost.orderByChild("title")
             .startAt(query)
             .endAt(query + "\uf8ff")
 
-        val options = FirebaseRecyclerOptions.Builder<Data>()
-            .setQuery(firebaseSearchQuery, Data::class.java)
+        val options = FirebaseRecyclerOptions.Builder<JobPostData>()
+            .setQuery(firebaseSearchQuery, JobPostData::class.java)
             .build()
 
-        adapter = object : FirebaseRecyclerAdapter<Data, AllJobPostViewHolder>(options) {
+        adapter = object : FirebaseRecyclerAdapter<JobPostData, AllJobPostViewHolder>(options) {
             override fun onBindViewHolder(
-                holder: AllJobPostViewHolder, position: Int, model: Data
+                holder: AllJobPostViewHolder, position: Int, model: JobPostData
             ) {
                 holder.setJobTitle(model.title)
                 holder.setJobDescription(model.description)
                 holder.setJobSkills(model.skills)
                 holder.setJobSalary(model.salary)
 
-                holder.btnjobapply.setOnClickListener {
+                // Fetch provider companyName using providerId
+                providerRef.child(model.providerId).child("companyName").addListenerForSingleValueEvent(
+                    object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val companyName = snapshot.getValue(String::class.java) ?: "Name not available"
+                            holder.setProviderLocation(companyName)
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            holder.setProviderLocation("Error fetching Name")
+                        }
+                    }
+                )
+
+                holder.jobApplyBtn.setOnClickListener {
                     val intent = Intent(this@JobSeeker, JobApplicationActivity::class.java)
                     startActivity(intent)
                 }
@@ -103,27 +118,32 @@ class JobSeeker : AppCompatActivity() {
     }
 
     class AllJobPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val btnjobapply: Button = itemView.findViewById(R.id.allJobPostApllyButton)
+        val jobApplyBtn: Button = itemView.findViewById(R.id.btn_apply)
         private val mView: View = itemView
 
         fun setJobTitle(title: String) {
-            val mTitle: TextView = mView.findViewById(R.id.alljobTitle)
+            val mTitle: TextView = mView.findViewById(R.id.jobTitle)
             mTitle.text = title
         }
 
         fun setJobDescription(description: String) {
-            val mDescription: TextView = mView.findViewById(R.id.alljobDescription)
+            val mDescription: TextView = mView.findViewById(R.id.jobDescription)
             mDescription.text = description
         }
 
         fun setJobSkills(skills: String) {
-            val mSkills: TextView = mView.findViewById(R.id.alljobSkills)
+            val mSkills: TextView = mView.findViewById(R.id.jobSkills)
             mSkills.text = skills
         }
 
         fun setJobSalary(salary: String) {
-            val mSalary: TextView = mView.findViewById(R.id.alljobSalary)
+            val mSalary: TextView = mView.findViewById(R.id.jobSalary)
             mSalary.text = salary
+        }
+
+        fun setProviderLocation(companyName: String) {
+            val mLocation: TextView = mView.findViewById(R.id.job_company)
+            mLocation.text = companyName
         }
     }
 }

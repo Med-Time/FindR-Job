@@ -10,7 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.medtime.findrjob.Model.Data
+import com.medtime.findrjob.model.JobPostData
 import java.text.DateFormat
 import java.util.Date
 
@@ -75,9 +75,9 @@ class InsertDataJobProvider : AppCompatActivity() {
                     val id = mJobPost.push().key ?: ""
                     val date = DateFormat.getDateInstance().format(Date())
 
-                    val data = Data(title, description, skills, salary, id, date)
-                    mJobPost.child(id).setValue(data)
-                    mPublicDatabase.child(id).setValue(data)
+                    val jobPostData = JobPostData(title, description, skills, salary, id, date)
+                    mJobPost.child(id).setValue(jobPostData)
+                    mPublicDatabase.child(id).setValue(jobPostData)
 
                     Toast.makeText(this, "Successfully Posted", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, JobProvider::class.java))

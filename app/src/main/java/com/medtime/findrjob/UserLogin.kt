@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.database.FirebaseDatabase
 
 class UserLogin : AppCompatActivity() {
 
@@ -102,7 +103,7 @@ class UserLogin : AppCompatActivity() {
                             when (selectedUserType) {
                                 "Job Seeker" -> {
                                     val intent =
-                                        Intent(applicationContext, SeekerAccountDetails::class.java)
+                                        Intent(applicationContext, JobSeekerDashboard::class.java)
                                     intent.putExtra("userId", userId)
                                     startActivity(intent)
                                     finish()
@@ -111,25 +112,26 @@ class UserLogin : AppCompatActivity() {
                                 "Job Provider" -> {
                                     val intent = Intent(
                                         applicationContext,
-                                        ProviderAccountDetails::class.java
+                                        JobProviderDashboardActivity::class.java
                                     )
                                     intent.putExtra("userId", userId)
                                     startActivity(intent)
                                     finish()
                                 }
 
-                                else -> {
-                                    loginProgress.visibility = View.VISIBLE
-                                    Toast.makeText(
-                                        this,
-                                        "Please Verify Your Email Address",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
                             }
                         } else {
-                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+                            loginProgress.visibility = View.VISIBLE
+                            Toast.makeText(
+                                this,
+                                "Please Verify Your Email Address",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
+                    } else {
+                        loginProgress.visibility = View.VISIBLE
+                        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
@@ -172,22 +174,50 @@ class UserLogin : AppCompatActivity() {
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign-in success, navigate to another activity
+                    // Sign-in success
                     val currentUser = firebaseAuth.currentUser
                     if (currentUser != null) {
-                        userId = currentUser.uid
-                        Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
+                        val userId = currentUser.uid
 
-                        val intent = Intent(applicationContext, JobPlatformActivity::class.java)
-                        intent.putExtra("userId", userId)
-                        startActivity(intent)
-                        finish()
+                        // Check if the userType exists in the database
+                        val userDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+                        userDatabase.get().addOnSuccessListener { dataSnapshot ->
+                            if (dataSnapshot.exists()) {
+                                val userType = dataSnapshot.child("userType").getValue(String::class.java)
+                                if (userType == "Job Seeker") {
+                                    // If userType is found, proceed to the platform
+                                    Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(applicationContext, JobSeekerDashboard::class.java)
+                                    intent.putExtra("userId", userId)
+                                    intent.putExtra("userType", userType)  // Pass the user type
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                if (userType == "Job Provider") {
+                                    // If userType is found, proceed to the platform
+                                    Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(applicationContext, JobProviderDashboardActivity::class.java)
+                                    intent.putExtra("userId", userId)
+                                    intent.putExtra("userType", userType)  // Pass the user type
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            } else {
+                                // If userType is not found, prompt the user to select a user type
+                                val intent = Intent(applicationContext, SelectUserType::class.java)
+                                intent.putExtra("userId", userId)
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
                     }
                 } else {
                     Toast.makeText(this, "Google Sign-In Failed", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
+
     private fun handleRadioButtonSelection(checkedId: Int) {
         val selectedRadioButton = findViewById<android.widget.RadioButton>(checkedId)
         val selectedText = selectedRadioButton.text.toString()

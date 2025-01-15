@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.medtime.findrjob.Model.User
+import com.medtime.findrjob.model.User
 
 class UserRegister : AppCompatActivity() {
 
@@ -78,7 +78,7 @@ class UserRegister : AppCompatActivity() {
                 return@setOnClickListener
             }
 //            registerprogress.visibility = View.VISIBLE
-            dialogBox("Fullname: $Fullname Email: $Email  Password: $Password")
+//            dialogBox("Fullname: $Fullname Email: $Email  Password: $Password")
 
             // Get selected user type
             val selectedUserTypeId = userTypeGroup.checkedRadioButtonId
@@ -88,7 +88,7 @@ class UserRegister : AppCompatActivity() {
             }
 
             val selectedUserType = findViewById<RadioButton>(selectedUserTypeId).text.toString()
-            Toast.makeText(this, selectedUserType, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, selectedUserType, Toast.LENGTH_SHORT).show()
 
             // Firebase authentication
             firebaseAuth.createUserWithEmailAndPassword(Email, Password)
@@ -99,7 +99,7 @@ class UserRegister : AppCompatActivity() {
                             ?.addOnCompleteListener { verificationTask ->
                                 if (verificationTask.isSuccessful) {
                                     val userId = firebaseAuth.currentUser?.uid
-                                    val newUser = User(Fullname, Email, Password)
+                                    val newUser = User(Fullname, Email, selectedUserType)
 
                                     // Save user data to Firebase Database
                                     userId?.let {
@@ -108,19 +108,20 @@ class UserRegister : AppCompatActivity() {
                                                 if (saveTask.isSuccessful) {
                                                     // Redirect based on user type
                                                     if (selectedUserType == "Job Seeker") {
-                                                        val intent = Intent(this, GetSeekerDetails::class.java)
-                                                        Toast.makeText(this, "Inside Seeker Next is get Seeker Details", Toast.LENGTH_SHORT).show()
+                                                        val intent = Intent(this, JobSeekerDashboard::class.java)
+//                                                        Toast.makeText(this, "Inside Seeker Next is get Seeker Details", Toast.LENGTH_SHORT).show()
                                                         intent.putExtra("userId", userId)
+                                                        intent.putExtra("userType", selectedUserType)  // Pass the user type
                                                         startActivity(intent)
                                                         finish()
                                                     } else if (selectedUserType == "Job Provider") {
-                                                        val intent = Intent(this, GetProviderDetails::class.java)
-                                                        Toast.makeText(this, "Inside Provider Next is get Seeker Details", Toast.LENGTH_SHORT).show()
+                                                        val intent = Intent(this, JobProviderDashboardActivity::class.java)
+//                                                        Toast.makeText(this, "Inside Provider Next is get Provider Details", Toast.LENGTH_SHORT).show()
                                                         intent.putExtra("userId", userId)
+                                                        intent.putExtra("userType", selectedUserType)  // Pass the user type
                                                         startActivity(intent)
                                                         finish()
                                                     }
-//                                                    finish()
                                                 } else {
                                                     Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show()
                                                 }
@@ -136,6 +137,7 @@ class UserRegister : AppCompatActivity() {
                         Toast.makeText(this, "Registration Failed: $errorMessage", Toast.LENGTH_LONG).show()
                     }
                 }
+
         }
 
         txtlogin.setOnClickListener {

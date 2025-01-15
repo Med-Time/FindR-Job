@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    kotlin("kapt")
 }
 
 android {
@@ -81,4 +82,8 @@ dependencies {
     // Other Libraries
     implementation(kotlin("script-runtime"))
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // Glide Image Loading Library
+    implementation("com.github.bumptech.glide:glide:4.12.0")  // Use the latest version
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
 }

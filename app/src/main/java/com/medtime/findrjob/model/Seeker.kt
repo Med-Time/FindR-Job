@@ -1,8 +1,6 @@
-package com.medtime.findrjob.Model
+package com.medtime.findrjob.model
 
 data class Seeker(
-    var name: String = "",
-    var email: String = "",
     var skills: String = "",
     var education: String = "",
     var location: String = "",

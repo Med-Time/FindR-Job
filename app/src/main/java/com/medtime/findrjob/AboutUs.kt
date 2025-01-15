@@ -19,7 +19,7 @@ class AboutUs : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        enableEdgeToEdge()
-        setContentView(R.layout.activity_about_me)
+        setContentView(R.layout.activity_about_us)
 
         imgYoutube = findViewById(R.id.imgYoutube)
         imgGitHub = findViewById(R.id.imgGitHub)

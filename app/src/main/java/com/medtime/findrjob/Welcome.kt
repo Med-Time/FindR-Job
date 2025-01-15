@@ -44,7 +44,7 @@ class Welcome : AppCompatActivity() {
 
     private fun displayRoundedLogo() {
         val logoImageView = findViewById<ImageView>(R.id.logoImage)
-        val drawable = resources.getDrawable(R.drawable.logo, null)
+        val drawable = resources.getDrawable(R.drawable.logo, theme)
         if (drawable is BitmapDrawable) {
             val bitmap = drawable.bitmap
             val roundedBitmap = bitmap.config?.let {

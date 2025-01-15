@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.database.*
-import com.medtime.findrjob.Model.Data
+import com.medtime.findrjob.model.JobPostData
 
 class EditJobPostActivity : AppCompatActivity() {
 
@@ -37,7 +37,7 @@ class EditJobPostActivity : AppCompatActivity() {
         // Fetch and populate job details
         jobPostDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val jobPost = snapshot.getValue(Data::class.java)
+                val jobPost = snapshot.getValue(JobPostData::class.java)
                 if (jobPost != null) {
                     jobTitle.setText(jobPost.title)
                     jobDescription.setText(jobPost.description)
@@ -71,7 +71,7 @@ class EditJobPostActivity : AppCompatActivity() {
 //                    // Optionally, refresh the data and UI after update
 //                    jobPostDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
 //                        override fun onDataChange(snapshot: DataSnapshot) {
-//                            val updatedPost = snapshot.getValue(Data::class.java)
+//                            val updatedPost = snapshot.getValue(JobPostData::class.java)
 //                            updatedPost?.let {
 //                                jobTitle.setText(it.title)
 //                                jobDescription.setText(it.description)

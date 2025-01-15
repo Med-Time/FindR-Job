@@ -14,7 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.medtime.Model.ApplicationData
+import com.medtime.findrjob.model.ApplicationData
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -22,7 +22,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class JobApplicationAdapter(
-    private val applicationList: List<ApplicationData>,
+    private val applicationList: MutableList<ApplicationData>,
     private val context: Context
 ) : RecyclerView.Adapter<JobApplicationAdapter.ViewHolder>() {
 

@@ -13,7 +13,7 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/alljobTitle"
+            android:id="@+id/job_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Job Title"
@@ -21,16 +21,23 @@
             android:gravity="center"
             android:textStyle="bold|italic"
             android:layout_marginBottom="8dp"/>
+        <TextView
+            android:id="@+id/job_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Company"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp"/>
 
         <TextView
-            android:id="@+id/alljobDescription"
+            android:id="@+id/jobDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Job Description"
             android:textSize="16sp"
             android:layout_marginBottom="6dp"/>
         <TextView
-            android:id="@+id/alljobDate"
+            android:id="@+id/jobDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="8/12/2024"
@@ -38,7 +45,7 @@
             android:layout_marginBottom="6dp"/>
 
         <TextView
-            android:id="@+id/alljobSkills"
+            android:id="@+id/jobSkills"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Skills Required"
@@ -46,7 +53,7 @@
             android:layout_marginBottom="6dp"/>
 
         <TextView
-            android:id="@+id/alljobSalary"
+            android:id="@+id/jobSalary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Salary"
@@ -54,10 +61,10 @@
             android:layout_marginBottom="6dp"/>
 
         <Button
+            android:id="@+id/btn_apply"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Apply"
-            android:id="@+id/allJobPostApllyButton"
             android:backgroundTint="#27D02E"/>
 
     </LinearLayout>

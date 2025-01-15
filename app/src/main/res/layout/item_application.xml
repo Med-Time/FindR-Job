@@ -1,0 +1,59 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/jobTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Job Title"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/applicationStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Pending"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/applicantName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name: John Doe"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/applicantEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email: john.doe@example.com"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/applicantContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact: 1234567890"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/applicantAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address: 123 Main St, City"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/fileButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View File"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
+</LinearLayout>

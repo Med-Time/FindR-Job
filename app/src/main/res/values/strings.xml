@@ -26,11 +26,31 @@
     <string name="name">FindR Job</string>
     <string name="job_provider">Job Provider</string>
     <string name="job_seeker">Job Seeker</string>
+    <string name="default_web_client_id">AIzaSyDIGRBCb24Xf1zZ1i1L8EsTeYARJl05EpE</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="tagline">By MedTime</string>
+    <string name="jobs_title">Available Jobs</string>
+    <string name="applications_title">Your Applications</string>
+    <string name="profile_title">Profile</string>
+    <!--  Job Details  -->
+    <string name="apply_now">Apply Now</string>
+    <string name="job_status_pending">Status: Pending</string>
+    <string name="job_status_accepted">Status: Accepted</string>
+    <string name="job_status_rejected">Status: Rejected</string>
+    <!--  Profile Section  -->
+    <string name="profile_name">Name: </string>
+    <string name="applied_count">Jobs Applied: </string>
+    <string name="accepted_count">Jobs Accepted: </string>
+    <string name="rejected_count">Jobs Rejected: </string>
+    <string name="software_developer">Software Developer</string>
+    <string name="status_pending">Status: Pending</string>
+    <string name="jobs_applied_10">Jobs Applied: 10</string>
+    <string name="jobs_accepted_3">Jobs Accepted: 3</string>
+    <string name="jobs_rejected_7">Jobs Rejected: 7</string>
+    <string name="name_anish_sharma">Name: Anish Sharma</string>
 
 </resources>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".SelectUserType">
+
+    <!-- Title Text -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please select your user type"
+        android:textSize="20sp"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- RadioGroup for selecting user type -->
+    <RadioGroup
+        android:id="@+id/userTypeGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/titleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp">
+
+        <!-- Job Seeker Option -->
+        <RadioButton
+            android:id="@+id/radioJobSeeker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Job Seeker"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Job Provider Option -->
+        <RadioButton
+            android:id="@+id/radioJobProvider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Job Provider"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"/>
+    </RadioGroup>
+
+    <!-- Submit Button -->
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:textSize="16sp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/userTypeGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
