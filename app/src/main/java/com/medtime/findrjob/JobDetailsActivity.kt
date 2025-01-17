@@ -3,6 +3,7 @@ package com.medtime.findrjob
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -34,6 +35,9 @@ class JobDetailsActivity : BaseActivity() {
         val jobDate = intent.getStringExtra("jobDate")
         val jobSkills = intent.getStringExtra("jobSkills")
         val jobSalary = intent.getStringExtra("jobSalary")
+
+
+        Log.d("JobDetailsActivity", "Job details: $jobId, $jobTitle, $companyName, $jobDescription, $jobDate, $jobSkills, $jobSalary")
 
         // Initialize views
         findViewById<TextView>(R.id.job_title).text = jobTitle

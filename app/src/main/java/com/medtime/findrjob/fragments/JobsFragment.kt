@@ -3,6 +3,7 @@ package com.medtime.findrjob.fragments
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -57,6 +58,7 @@ class JobsFragment : Fragment() {
         jobsRecyclerView.layoutManager = LinearLayoutManager(context)
         jobAdapter = JobAdapter(jobList.toMutableList()) { job ->
             // Navigate to JobDetailsActivity when a job is clicked
+            Log.d("JobsFragment", "Job clicked: ${job.title}, ${job.company}, ${job.id}")
             val intent = Intent(requireContext(), JobDetailsActivity::class.java).apply {
                 putExtra("jobId", job.id)
                 putExtra("jobTitle", job.title)

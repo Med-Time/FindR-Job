@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.OpenableColumns
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -61,6 +62,8 @@ class JobApplicationActivity : AppCompatActivity() {
         val jobTitle = intent.getStringExtra("jobTitle")
         val jobId = intent.getStringExtra("jobId")
         val companyName = intent.getStringExtra("companyName")
+
+        Log.d("JobApplicationActivity", "Job details: $jobTitle, $jobId, $companyName")
 
         // Initialize Firebase references
         applicationsDatabase = FirebaseDatabase.getInstance().reference.child("Applications")
@@ -243,6 +246,14 @@ class JobApplicationActivity : AppCompatActivity() {
         email: String,
         resumeUrl: String
     ) {
+
+        Log.d("JobApplicationActivity", "Saving application: $userId, $jobId, $jobTitle, $companyName")
+
+        val sharedPreferences = getSharedPreferences("IgnoredJobs", 0)
+        val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", mutableSetOf())!!
+        ignoredJobs.add(jobId)
+        sharedPreferences.edit().putStringSet("ignoredJobs", ignoredJobs).apply()
+
         val id = applicationsDatabase.push().key
         if (id != null) {
             val applicationData = ApplicationData(jobId, jobTitle,companyName, name, addr, contact, email, resumeUrl)
