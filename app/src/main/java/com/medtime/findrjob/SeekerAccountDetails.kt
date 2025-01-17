@@ -5,6 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,25 +20,29 @@ import com.google.firebase.storage.StorageReference
 import com.medtime.findrjob.model.Seeker
 import com.medtime.findrjob.model.User
 
-class SeekerAccountDetails : AppCompatActivity() {
+class SeekerAccountDetails : BaseActivity() {
 
-    private lateinit var editTextName: EditText
-    private lateinit var editTextEmail: EditText
-    private lateinit var editTextSkills: EditText
-    private lateinit var editTextEducation: EditText
-    private lateinit var editTextLocation: EditText
-    private lateinit var editTextPreferences: EditText
-    private lateinit var buttonEdit: Button
-    private lateinit var buttonSave: Button
-    private lateinit var btnResetPassword: Button
-    private lateinit var viewResumeButton: Button
-    private lateinit var uploadResumeButton: Button
+    private lateinit var editTextName: TextView
+    private lateinit var editTextEmail: TextView
+    private lateinit var editTextSkills: TextView
+    private lateinit var editSkillsIcon: ImageView
+    private lateinit var editTextEducation: TextView
+    private lateinit var editEducationIcon: ImageView
+    private lateinit var editTextLocation: TextView
+    private lateinit var editLocationIcon: ImageView
+    private lateinit var editTextPreferences: TextView
+    private lateinit var editPreferencesIcon: ImageView
     private lateinit var imageViewProfilePicture: ImageView
+    private lateinit var buttonEditProfileImage: Button
+    private lateinit var buttonSave: Button
+    private lateinit var viewResumeButton: Button
+    private lateinit var editResumeIcon: ImageView
     private lateinit var userDatabase: DatabaseReference
     private lateinit var seekerDatabase: DatabaseReference
     private lateinit var storageReference: StorageReference
     private var userId: String? = null
     private var resumeUri: Uri? = null
+    private var selectedImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,14 +52,14 @@ class SeekerAccountDetails : AppCompatActivity() {
         // Initialize views
         initializeViews()
 
-        // Get userId from intent
+        // Get userId from intent or current user
         userId = intent.getStringExtra("userId") ?: FirebaseAuth.getInstance().currentUser?.uid
         Log.d("SeekerAccountDetails", "User ID: $userId")
 
         // Initialize Firebase references
         userDatabase = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
         seekerDatabase = FirebaseDatabase.getInstance().getReference("Seekers").child(userId!!)
-        storageReference = FirebaseStorage.getInstance().reference.child("Resumes").child(userId!!)
+        storageReference = FirebaseStorage.getInstance().reference.child("Profiles").child(userId!!)
 
         // Fetch user and seeker details and populate
         fetchUserDetails()
@@ -62,17 +69,20 @@ class SeekerAccountDetails : AppCompatActivity() {
     }
 
     private fun initializeViews() {
-        editTextName = findViewById(R.id.editTextName)
-        editTextEmail = findViewById(R.id.editTextEmail)
-        editTextSkills = findViewById(R.id.editTextSkills)
-        editTextEducation = findViewById(R.id.editTextEducation)
-        editTextLocation = findViewById(R.id.editTextLocation)
-        editTextPreferences = findViewById(R.id.editTextPreferences)
-        buttonEdit = findViewById(R.id.buttonEdit)
-        buttonSave = findViewById(R.id.buttonSave)
-        btnResetPassword = findViewById(R.id.resetPasswordButton)
+        editTextName = findViewById(R.id.textViewFullName)
+        editTextEmail = findViewById(R.id.textViewEmail)
+        editTextSkills = findViewById(R.id.textViewSkills)
+        editSkillsIcon = findViewById(R.id.editSkillsIcon)
+        editTextEducation = findViewById(R.id.textViewEducation)
+        editEducationIcon = findViewById(R.id.editEducationIcon)
+        editTextLocation = findViewById(R.id.textViewLocation)
+        editLocationIcon = findViewById(R.id.editLocationIcon)
+        editTextPreferences = findViewById(R.id.textViewPreferences)
+        editPreferencesIcon = findViewById(R.id.editPreferencesIcon)
+        buttonEditProfileImage = findViewById(R.id.buttonEditProfileImage)
+        buttonSave = findViewById(R.id.buttonSaveChanges)
         viewResumeButton = findViewById(R.id.viewResumeButton)
-        uploadResumeButton = findViewById(R.id.resume)
+        editResumeIcon = findViewById(R.id.editResumeIcon)
         imageViewProfilePicture = findViewById(R.id.imageViewProfilePicture)
     }
 
@@ -85,14 +95,12 @@ class SeekerAccountDetails : AppCompatActivity() {
     }
 
     private fun fetchUserDetails() {
-        // Fetching details from the 'Users' node
         userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val user = snapshot.getValue(User::class.java)
                 user?.let {
-                    it.fullname?.let { name -> Log.d("UserDetails", name) }
-                    editTextName.setText(it.fullname)
-                    editTextEmail.setText(it.email)
+                    editTextName.text = it.fullname
+                    editTextEmail.text = it.email
                 }
             }
 
@@ -102,31 +110,25 @@ class SeekerAccountDetails : AppCompatActivity() {
             }
         })
 
-        // Fetching seeker-specific details from the 'Seeker' node
         seekerDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val seeker = snapshot.getValue(Seeker::class.java)
                     seeker?.let {
-                        editTextSkills.setText(it.skills)
-                        editTextEducation.setText(it.education)
-                        editTextLocation.setText(it.location)
-                        editTextPreferences.setText(it.preferences)
-                        Log.d("SeekerDetails", "Education: ${it.education}, Skills: ${it.skills}")
+                        editTextSkills.text = it.skills
+                        editTextEducation.text = it.education
+                        editTextLocation.text = it.location
+                        editTextPreferences.text = it.preferences
 
-                        // Load profile picture using Glide if URL exists
                         if (it.profilePictureUrl.isNotEmpty()) {
                             loadLogoFromFirebase(it.profilePictureUrl)
                         } else {
-                            // Use a placeholder if the URL is empty
                             imageViewProfilePicture.setImageResource(R.drawable.man_dummy)
                         }
 
-                        // Show or hide the resume button based on resume availability
-                        viewResumeButton.visibility = if (it.resumeUrl.isNotEmpty()) View.VISIBLE else View.GONE
-                    } ?: Log.d("SeekerDetails", "Seeker object is null.")
-                } else {
-                    Log.d("SeekerDetails", "Snapshot does not exist for userId: $userId")
+                        viewResumeButton.visibility =
+                            if (it.resumeUrl.isNotEmpty()) View.VISIBLE else View.GONE
+                    }
                 }
             }
 
@@ -138,49 +140,91 @@ class SeekerAccountDetails : AppCompatActivity() {
     }
 
     private fun loadLogoFromFirebase(logoUrl: String) {
-        // Load the image from the URL using Glide
         Glide.with(this)
             .load(logoUrl)
-            .placeholder(R.drawable.man_dummy2) // Default image while loading
-            .error(R.drawable.man_dummy) // Default image if loading fails
+            .placeholder(R.drawable.man_dummy)
+            .error(R.drawable.man_dummy2)
             .into(imageViewProfilePicture)
     }
 
-
     private fun setListeners() {
-        buttonEdit.setOnClickListener {
-            enableEditing(true)
+        buttonEditProfileImage.setOnClickListener {
+            chooseProfileImage()
         }
-
         buttonSave.setOnClickListener {
             saveUserData()
         }
-
-        btnResetPassword.setOnClickListener {
-            resetPassword()
-        }
-
         viewResumeButton.setOnClickListener {
             viewResume()
         }
 
-        uploadResumeButton.setOnClickListener {
-            chooseResume()
-        }
-
-        enableEditing(false)
+        // Edit icons click listeners
+        editSkillsIcon.setOnClickListener { enableEditing(editTextSkills, "skills") }
+        editEducationIcon.setOnClickListener { enableEditing(editTextEducation, "education") }
+        editLocationIcon.setOnClickListener { enableEditing(editTextLocation, "location") }
+        editPreferencesIcon.setOnClickListener { enableEditing(editTextPreferences, "preferences") }
+        editResumeIcon.setOnClickListener { chooseResume() }
     }
 
-    private fun enableEditing(enable: Boolean) {
-        editTextName.isEnabled = enable
-        editTextEmail.isEnabled = enable
-        editTextSkills.isEnabled = enable
-        editTextEducation.isEnabled = enable
-        editTextLocation.isEnabled = enable
-        editTextPreferences.isEnabled = enable
-        buttonEdit.visibility = if (enable) View.GONE else View.VISIBLE
-        buttonSave.visibility = if (enable) View.VISIBLE else View.GONE
-        uploadResumeButton.visibility = if (enable) View.VISIBLE else View.GONE
+    private fun enableEditing(textView: TextView, field: String) {
+        buttonSave.visibility = View.VISIBLE
+        val currentText = textView.text.toString()
+
+        val editText = EditText(this).apply {
+            setText(currentText)
+            layoutParams = textView.layoutParams
+        }
+
+        val parent = textView.parent as ViewGroup
+        val index = parent.indexOfChild(textView)
+        parent.removeView(textView)
+        parent.addView(editText, index)
+
+        editText.requestFocus()
+        editText.setSelection(currentText.length)
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) saveChanges(editText, textView, field)
+        }
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveChanges(editText, textView, field)
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun saveChanges(editText: EditText, textView: TextView, field: String) {
+        val updatedText = editText.text.toString().trim()
+
+        val parent = editText.parent as ViewGroup
+        val index = parent.indexOfChild(editText)
+        parent.removeView(editText)
+        textView.text = updatedText
+        parent.addView(textView, index)
+
+        seekerDatabase.child(field).setValue(updatedText).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                showToast("$field updated successfully!")
+            } else {
+                showToast("Failed to update $field.")
+            }
+        }
+    }
+
+    private fun chooseProfileImage() {
+        // Launch an intent to pick an image from the gallery
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }
+        startActivityForResult(
+            Intent.createChooser(intent, "Select Profile Image"),
+            PROFILE_IMAGE_REQUEST_CODE
+        )
     }
 
     private fun saveUserData() {
@@ -196,52 +240,38 @@ class SeekerAccountDetails : AppCompatActivity() {
             return
         }
 
-        val updatedUser = User(
-            email = email,
-            fullname = name,
-            userType = "Job Seeker"
-        )
+        // Update Seeker info in the database
+        seekerDatabase.child("skills").setValue(skills)
+        seekerDatabase.child("education").setValue(education)
+        seekerDatabase.child("location").setValue(location)
+        seekerDatabase.child("preferences").setValue(preferences)
 
-        // Save updated basic user details in 'Users' node
-        userDatabase.setValue(updatedUser).addOnCompleteListener {
-            if (it.isSuccessful) {
-                showToast("User details saved successfully!")
-            } else {
-                showToast("Failed to save user details.")
-            }
-        }
+        // Update profile image if a new image is selected
+        selectedImageUri?.let { uploadProfileImage(it) }
 
-        val updatedSeeker = Seeker(skills = skills, education = education,
-            location = location, preferences = preferences,
-            profilePictureUrl = "", resumeUrl = ""
-        )
-        // Save seeker-specific details in 'Seeker' node
-        seekerDatabase.setValue(updatedSeeker).addOnCompleteListener {
-            if (it.isSuccessful) {
-                showToast("Seeker details saved successfully!")
-            } else {
-                showToast("Failed to save seeker details.")
-            }
-        }
+        // Hide keyboard and clear focus from any focused view
+        val currentFocusView = currentFocus
+        currentFocusView?.clearFocus() // Clear focus from the current view
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocusView?.windowToken, 0)
 
-        resumeUri?.let { uploadResume(it) }
-        enableEditing(false)
+        showToast("Changes saved successfully!")
     }
 
-    private fun resetPassword() {
-        val email = editTextEmail.text.toString().trim()
-        if (email.isEmpty()) {
-            showToast("Email field is empty.")
-            return
-        }
 
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    showToast("Password reset email sent.")
-                } else {
-                    showToast("Failed to send password reset email.")
+    private fun uploadProfileImage(uri: Uri) {
+        storageReference.putFile(uri)
+            .addOnSuccessListener {
+                // Get the download URL after uploading
+                storageReference.downloadUrl.addOnSuccessListener { url ->
+                    // Update URL in the seeker database
+                    seekerDatabase.child("profilePictureUrl").setValue(url.toString())
+                    showToast("Profile image uploaded successfully!")
+                    loadLogoFromFirebase(url.toString()) // Load the new image
                 }
+            }
+            .addOnFailureListener {
+                showToast("Failed to upload profile image.")
             }
     }
 
@@ -252,19 +282,6 @@ class SeekerAccountDetails : AppCompatActivity() {
         startActivityForResult(Intent.createChooser(intent, "Select Resume"), STORAGE_REQUEST_CODE)
     }
 
-    private fun uploadResume(uri: Uri) {
-        storageReference.putFile(uri)
-            .addOnSuccessListener {
-                storageReference.downloadUrl.addOnSuccessListener { url ->
-                    seekerDatabase.child("resumeUrl").setValue(url.toString())
-                    showToast("Resume uploaded successfully!")
-                }
-            }
-            .addOnFailureListener {
-                showToast("Failed to upload resume.")
-            }
-    }
-
     private fun viewResume() {
         seekerDatabase.child("resumeUrl").get().addOnSuccessListener { snapshot ->
             val resumeUrl = snapshot.getValue(String::class.java)
@@ -272,9 +289,9 @@ class SeekerAccountDetails : AppCompatActivity() {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW).apply {
                         setDataAndType(Uri.parse(resumeUrl), "application/pdf")
-                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
+                        flags =
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
                     }
-                    // Verify there is a PDF viewer app
                     if (intent.resolveActivity(packageManager) != null) {
                         startActivity(intent)
                     } else {
@@ -291,13 +308,23 @@ class SeekerAccountDetails : AppCompatActivity() {
         }
     }
 
-
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        // Handle profile image selection
+        if (requestCode == PROFILE_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+            selectedImageUri = data?.data
+            if (selectedImageUri != null) {
+                showToast("Profile image selected.")
+                imageViewProfilePicture.setImageURI(selectedImageUri) // Show selected image
+            }
+        }
+
+        // Handle resume selection
         if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             resumeUri = data?.data
             if (resumeUri != null) {
@@ -308,5 +335,6 @@ class SeekerAccountDetails : AppCompatActivity() {
 
     companion object {
         private const val STORAGE_REQUEST_CODE = 100
+        private const val PROFILE_IMAGE_REQUEST_CODE = 101
     }
 }

@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.medtime.findrjob.Model.JobPost
+import com.medtime.findrjob.model.JobPost
 
 class JobPostAdapter(
     private val jobList: MutableList<JobPost>,  // Make the list mutable if you need to remove items

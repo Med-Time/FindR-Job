@@ -1,17 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/jobs_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your Applications"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/custom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:titleTextColor="#FFFFFF"
+        android:elevation="4dp" />
+
 
     <TextView
         android:id="@+id/empty_view"
@@ -34,6 +33,6 @@
         android:id="@+id/applications_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/jobs_title"
+        android:layout_below="@id/custom_toolbar"
         android:visibility="gone" />
 </RelativeLayout>

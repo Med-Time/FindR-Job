@@ -6,7 +6,8 @@ data class Application(
     val contact: String? = null,
     val cvUrl: String? = null,
     val email: String? = null,
-    val id: String? = null,          // User ID
-    val name: String? = null,
-    val status: String? = null     // Job provider's feedback
+    val jobID: String? = null,
+    val status: String? = null,
+    var company: String? = null,
+    val date: String? = null
 )

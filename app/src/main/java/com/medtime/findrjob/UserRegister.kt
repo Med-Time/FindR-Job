@@ -25,15 +25,6 @@ class UserRegister : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var userDatabase: DatabaseReference
 
-    public override fun onStart() {
-        super.onStart()
-        val currentUser = firebaseAuth.currentUser
-        if (currentUser != null) {
-            intent = Intent(applicationContext, JobPlatformActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,14 +99,14 @@ class UserRegister : AppCompatActivity() {
                                                 if (saveTask.isSuccessful) {
                                                     // Redirect based on user type
                                                     if (selectedUserType == "Job Seeker") {
-                                                        val intent = Intent(this, JobSeekerDashboard::class.java)
+                                                        val intent = Intent(this, GetSeekerDetails::class.java)
 //                                                        Toast.makeText(this, "Inside Seeker Next is get Seeker Details", Toast.LENGTH_SHORT).show()
                                                         intent.putExtra("userId", userId)
                                                         intent.putExtra("userType", selectedUserType)  // Pass the user type
                                                         startActivity(intent)
                                                         finish()
                                                     } else if (selectedUserType == "Job Provider") {
-                                                        val intent = Intent(this, JobProviderDashboardActivity::class.java)
+                                                        val intent = Intent(this, GetProviderDetails::class.java)
 //                                                        Toast.makeText(this, "Inside Provider Next is get Provider Details", Toast.LENGTH_SHORT).show()
                                                         intent.putExtra("userId", userId)
                                                         intent.putExtra("userType", selectedUserType)  // Pass the user type
@@ -144,16 +135,5 @@ class UserRegister : AppCompatActivity() {
             val loginIntent = Intent(this, UserLogin::class.java)
             startActivity(loginIntent)
         }
-    }
-
-    // Function to show a dialog box(for debugging)
-    private fun dialogBox(msg: String) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Confirmation")
-        builder.setMessage(msg)
-        builder.setPositiveButton("OK") { dialog, _ ->
-            dialog.dismiss()
-        }
-        builder.show()
     }
 }

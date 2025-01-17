@@ -167,7 +167,7 @@ class GetSeekerDetails : AppCompatActivity() {
     }
 
     private fun navigateToSeekerDashboard() {
-        val intent = Intent(this, SeekerAccountDetails::class.java)
+        val intent = Intent(this, JobSeekerDashboard::class.java)
         intent.putExtra("userId", firebaseAuth.currentUser?.uid)
         startActivity(intent)
         finish()
