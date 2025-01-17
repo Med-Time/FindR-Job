@@ -15,7 +15,7 @@ import com.medtime.findrjob.R
 import com.medtime.findrjob.model.Application
 
 class MyApplicationAdapter(
-    private val applications: List<Application> // Use immutable List
+    private val applications: MutableList<Application>
 ) : RecyclerView.Adapter<MyApplicationAdapter.ApplicationViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
@@ -96,5 +96,11 @@ class MyApplicationAdapter(
             // Show file button only if CV URL is present
             fileButton.visibility = if (!application.cvUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    fun updateList(newList: List<Application>) {
+        applications.clear()
+        applications.addAll(newList)
+        notifyDataSetChanged()
     }
 }

@@ -4,12 +4,15 @@ package com.medtime.findrjob.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,6 +55,30 @@ class ApplicationsFragment : Fragment() {
         loadApplicationsFromDatabase()
 
         return view
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true) // Enable options menu in fragment
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.search_view)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { filterJobs(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filterJobs(it) }
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun loadApplicationsFromDatabase() {
@@ -106,5 +133,13 @@ class ApplicationsFragment : Fragment() {
                     progressBar.visibility = View.GONE
                 }
             })
+    }
+    private fun filterJobs(query: String) {
+        val filteredList = applicationList.filter { job ->
+            job.jobTitle?.contains(query, ignoreCase = true) ?: true || // Search by job title
+                    job.company?.contains(query, ignoreCase = true) ?: true|| // Optionally search by company name
+                    job.status?.contains(query, ignoreCase = true) ?: true // Optionally search by skills
+        }
+        applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
     }
 }
