@@ -84,10 +84,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Credits
 
-Special thanks to:
-- **Contributors**:  - [Bhishan Pangeni](https://github.com/bhishanP)
-                     - [Anmol Bhusal](https://github.com/anmol52490)
-                     - [Sagar Khadka](https://github.com/thisisSagarKhadka)
+- **Contributors**:
+    - [Bhishan Pangeni](https://github.com/bhishanP)
+    - [Anmol Bhusal](https://github.com/anmol52490)
+    - [Sagar Khadka](https://github.com/thisisSagarKhadka)
 - **Libraries and Tools**: Android Studio, Kotlin, Firebase, Material Design components.
 
 ---
@@ -96,15 +96,14 @@ Special thanks to:
 
 For queries or support, please contact:
 
-- **Name**: [Medtimers]
-- **Email**: [your-email@example.com]
+- **Name**: [Medtime]
+- **Email**: [testmyprojectagain@gmail.com]
 - **GitHub Issues**: [Open an Issue](https://github.com/Med-Time/FindR-Job/issues)
 
 ---
 
 ### Additional Sections 
 
-If you want, you can also include:
 - **Roadmap**: Future plans for enhancements or features.
 - **FAQ**: Commonly asked questions about the project.
 - **Screenshots**: Visuals of the app's key features or UI.
