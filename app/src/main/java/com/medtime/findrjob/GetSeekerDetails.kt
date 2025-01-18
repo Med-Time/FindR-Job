@@ -42,6 +42,8 @@ class GetSeekerDetails : AppCompatActivity() {
         databaseReference = FirebaseDatabase.getInstance().getReference("Seekers")
         storageReference = FirebaseStorage.getInstance().reference
 
+        val userID = intent.getStringExtra("userID") ?: firebaseAuth.currentUser?.uid
+
         // Initialize views
         imageViewLogo = findViewById(R.id.imageViewLogo)
         editTextEducation = findViewById(R.id.education)
@@ -92,12 +94,13 @@ class GetSeekerDetails : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (selectedImageUri == null || selectedResumeUri == null) {
-                showToast("Please upload your profile picture and resume!")
+            if (userID != null) {
+                saveSeekerDetailsToFirebase(userID, education, location, skills, preferences)
+            }
+            else{
+                showToast("User not Found")
                 return@setOnClickListener
             }
-
-            saveSeekerDetailsToFirebase(education, location, skills, preferences)
         }
     }
 
@@ -112,6 +115,7 @@ class GetSeekerDetails : AppCompatActivity() {
     }
 
     private fun saveSeekerDetailsToFirebase(
+        userID : String,
         education: String,
         location: String,
         skills: String,
@@ -119,50 +123,44 @@ class GetSeekerDetails : AppCompatActivity() {
     ) {
         buttonSubmit.isEnabled = false
         showToast("Saving details...")
+        val imageRef = storageReference.child("Seekers/$userID/profile_picture.jpg")
+        val resumeRef = storageReference.child("Seekers/$userID/resume.pdf")
 
-        val userId = firebaseAuth.currentUser?.uid
-        if (userId != null) {
-            val imageRef = storageReference.child("Seekers/$userId/profile_picture.jpg")
-            val resumeRef = storageReference.child("Seekers/$userId/resume.pdf")
-
-            // Upload Profile Picture
-            selectedImageUri?.let { imageUri ->
-                imageRef.putFile(imageUri).addOnSuccessListener {
-                    imageRef.downloadUrl.addOnSuccessListener { imageUrl ->
-                        // Upload Resume
-                        selectedResumeUri?.let { resumeUri ->
-                            resumeRef.putFile(resumeUri).addOnSuccessListener {
-                                resumeRef.downloadUrl.addOnSuccessListener { resumeUrl ->
-                                    // Save details to database
-                                    val seekerDetails = mapOf(
-                                        "education" to education,
-                                        "location" to location,
-                                        "skills" to skills,
-                                        "preferences" to preferences,
-                                        "profilePictureUrl" to imageUrl.toString(),
-                                        "resumeUrl" to resumeUrl.toString()
-                                    )
-                                    databaseReference.child(userId).setValue(seekerDetails)
-                                        .addOnCompleteListener { task ->
-                                            if (task.isSuccessful) {
-                                                showToast("Details saved successfully!")
-                                                navigateToSeekerDashboard()
-                                            } else {
-                                                showToast("Failed to save details!")
-                                            }
+        // Upload Profile Picture
+        selectedImageUri?.let { imageUri ->
+            imageRef.putFile(imageUri).addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { imageUrl ->
+                    // Upload Resume
+                    selectedResumeUri?.let { resumeUri ->
+                        resumeRef.putFile(resumeUri).addOnSuccessListener {
+                            resumeRef.downloadUrl.addOnSuccessListener { resumeUrl ->
+                                // Save details to database
+                                val seekerDetails = mapOf(
+                                    "education" to education,
+                                    "location" to location,
+                                    "skills" to skills,
+                                    "preferences" to preferences,
+                                    "profilePictureUrl" to imageUrl.toString(),
+                                    "resumeUrl" to resumeUrl.toString()
+                                )
+                                databaseReference.child(userID).setValue(seekerDetails)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            showToast("Details saved successfully!")
+                                            navigateToSeekerDashboard()
+                                        } else {
+                                            showToast("Failed to save details!")
                                         }
-                                }
-                            }.addOnFailureListener {
-                                showToast("Failed to upload resume!")
+                                    }
                             }
+                        }.addOnFailureListener {
+                            showToast("Failed to upload resume!")
                         }
                     }
-                }.addOnFailureListener {
-                    showToast("Failed to upload profile picture!")
                 }
+            }.addOnFailureListener {
+                showToast("Failed to upload profile picture!")
             }
-        } else {
-            showToast("User not authenticated!")
         }
     }
 

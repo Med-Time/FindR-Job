@@ -30,6 +30,8 @@ class GetProviderDetails : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storageReference: StorageReference
 
+    private lateinit var userID : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_get_provider_details)
@@ -37,7 +39,9 @@ class GetProviderDetails : AppCompatActivity() {
         // Initialize Firebase
         firebaseAuth = FirebaseAuth.getInstance()
         databaseReference = FirebaseDatabase.getInstance().getReference("Providers")
-        storageReference = FirebaseStorage.getInstance().getReference("ProviderLogos")
+        storageReference = FirebaseStorage.getInstance().getReference("Providers")
+
+        userID = (intent.getStringExtra("userID")?: firebaseAuth.currentUser?.uid).toString()
 
         // Initialize views
         imageViewLogo = findViewById(R.id.imageViewLogo)
@@ -109,20 +113,14 @@ class GetProviderDetails : AppCompatActivity() {
     ) {
         // Show a loading message
         buttonSubmit.isEnabled = false
-        showToast("Uploading logo and saving details...")
+        showToast("Saving details...")
 
-        // Get user ID
-        val userId = firebaseAuth.currentUser?.uid
-        if (userId == null) {
-            showToast("User not authenticated!")
-            return
-        }
 
         // Upload logo to Firebase Storage
-        val logoRef = storageReference.child("$userId/logo.jpg")
+        val logoRef = storageReference.child("$userID/logo.jpg")
         selectedImageUri?.let { uri ->
             logoRef.putFile(uri)
-                .addOnSuccessListener { taskSnapshot ->
+                .addOnSuccessListener {
                     // Get the logo's download URL
                     logoRef.downloadUrl.addOnSuccessListener { downloadUri ->
                         saveProviderDetailsToFirebase(
@@ -144,35 +142,31 @@ class GetProviderDetails : AppCompatActivity() {
         industryType: String,
         logoUrl: String
     ) {
-        val userId = firebaseAuth.currentUser?.uid
-        if (userId != null) {
-            val providerDetails = mapOf(
-                "companyName" to companyName,
-                "email" to email,
-                "address" to address,
-                "industryType" to industryType,
-                "logoUrl" to logoUrl
-            )
-            databaseReference.child(userId).setValue(providerDetails)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        showToast("Details saved successfully!")
-                        navigateToDashboard()
-                    } else {
-                        showToast("Failed to save details: ${task.exception?.message}")
-                        buttonSubmit.isEnabled = true
-                    }
-                }
+    val providerDetails = mapOf(
+        "companyName" to companyName,
+        "email" to email,
+        "address" to address,
+        "industryType" to industryType,
+        "logoUrl" to logoUrl
+    )
+    databaseReference.child(userID).setValue(providerDetails)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                showToast("Details saved successfully!")
+                navigateToDashboard()
+            } else {
+                showToast("Failed to save details: ${task.exception?.message}")
+                buttonSubmit.isEnabled = true
+            }
         }
     }
 
     private fun navigateToDashboard() {
-        val intent = Intent(this, ProviderAccountDetails::class.java)
-        intent.putExtra("userId", firebaseAuth.currentUser?.uid)
+        val intent = Intent(this, newjobproviderdashboard::class.java)
+        intent.putExtra("userId", userID)
         startActivity(intent)
         finish()
     }
-
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
