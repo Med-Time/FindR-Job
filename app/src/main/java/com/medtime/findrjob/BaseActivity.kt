@@ -6,18 +6,39 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 
 open class BaseActivity : AppCompatActivity() {
+
+    private var searchQueryListener: ((String) -> Unit)? = null
 
     fun setupToolbar() {
         val toolbar: Toolbar = findViewById(R.id.custom_toolbar)
         setSupportActionBar(toolbar)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    fun setSearchQueryListener(listener: ((String) -> Unit)?) {
+        searchQueryListener = listener
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.search_view)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { searchQueryListener?.invoke(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { searchQueryListener?.invoke(it) }
+                return true
+            }
+        })
         return true
     }
 

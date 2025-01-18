@@ -1,10 +1,11 @@
-package com.medtime.findrjob
+package com.medtime.findrjob.fragments
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.medtime.findrjob.BaseActivity
+import com.medtime.findrjob.R
 import com.medtime.findrjob.model.JobPost
 import com.medtime.findrjob.adapters.JobPostAdapter
 import kotlin.collections.ArrayList
@@ -31,22 +34,16 @@ class ManageJobProvider : Fragment() {
     private lateinit var valueEventListener: ValueEventListener
     private lateinit var toolbar:Toolbar
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true) // Enable options menu in fragment
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-
         val view = inflater.inflate(R.layout.activity_job_provider_dashboard, container, false)
         toolbar = view.findViewById(R.id.custom_toolbar)
 
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.title = "Available Jobs"
+        (activity as AppCompatActivity).supportActionBar?.title = "Your Jobs"
         // Initialize Firebase reference
         jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
 
@@ -65,24 +62,16 @@ class ManageJobProvider : Fragment() {
         return view
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
-        val searchItem = menu.findItem(R.id.search_view)
-        val searchView = searchItem.actionView as SearchView
+    override fun onResume() {
+        super.onResume()
+        (activity as? BaseActivity)?.setSearchQueryListener { query ->
+            filterJobs(query)
+        }
+    }
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { filterJobs(it) }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { filterJobs(it) }
-                return true
-            }
-        })
-
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onPause() {
+        super.onPause()
+        (activity as? BaseActivity)?.setSearchQueryListener(null)
     }
 
     private fun fetchJobPostsForProvider() {
@@ -112,7 +101,6 @@ class ManageJobProvider : Fragment() {
                 if (jobList.isEmpty()) {
                     Toast.makeText(requireContext(), "No jobs found.", Toast.LENGTH_SHORT).show()
                 }
-
                 adapter.notifyDataSetChanged() // Notify the adapter that data has changed
             }
 
@@ -140,7 +128,6 @@ class ManageJobProvider : Fragment() {
             job.title.contains(query, ignoreCase = true) || // Search by job title
                     job.skills.contains(query, ignoreCase = true) // Optionally search by skills
         }
-
         adapter.updateList(filteredList) // Update the adapter with the filtered list
     }
 }

@@ -10,14 +10,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.medtime.findrjob.fragments.ApplicationsFragmentProvider
 import com.medtime.findrjob.fragments.JobsFragmentProvider
+import com.medtime.findrjob.fragments.ManageJobProvider
 import com.medtime.findrjob.fragments.ProfileFragmentProvider
 
 
-class JobProviderDashboard : AppCompatActivity() {
-
+class JobProviderDashboard : BaseActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
             enableEdgeToEdge()
+            super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_newjobproviderdashboard)
             ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
                 val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -25,7 +25,7 @@ class JobProviderDashboard : AppCompatActivity() {
                 insets
             }
             val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation_provider)
-            val btnflt = findViewById<FloatingActionButton>(R.id.fabprovider)
+            val floatingBtn = findViewById<FloatingActionButton>(R.id.fabprovider)
             if (savedInstanceState == null) {
                 loadFragment(ManageJobProvider())
             }
@@ -41,7 +41,7 @@ class JobProviderDashboard : AppCompatActivity() {
                 }
                 true
             }
-            btnflt.setOnClickListener {
+            floatingBtn.setOnClickListener {
                 loadFragment(JobsFragmentProvider())
             }
         }

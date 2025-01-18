@@ -162,7 +162,7 @@ class GetProviderDetails : AppCompatActivity() {
     }
 
     private fun navigateToDashboard() {
-        val intent = Intent(this, newjobproviderdashboard::class.java)
+        val intent = Intent(this, JobProviderDashboard::class.java)
         intent.putExtra("userId", userID)
         startActivity(intent)
         finish()

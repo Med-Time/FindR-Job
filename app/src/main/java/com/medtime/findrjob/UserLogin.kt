@@ -126,7 +126,7 @@ class UserLogin : AppCompatActivity() {
                         finish()
                     }
                     "Job Provider" -> {
-                        val intent = Intent(applicationContext, newjobproviderdashboard::class.java)
+                        val intent = Intent(applicationContext, JobProviderDashboard::class.java)
                         intent.putExtra("userId", userId)
                         startActivity(intent)
                         finish()

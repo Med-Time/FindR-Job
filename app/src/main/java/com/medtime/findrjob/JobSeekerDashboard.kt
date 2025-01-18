@@ -11,10 +11,10 @@ import com.medtime.findrjob.fragments.ApplicationsFragment
 import com.medtime.findrjob.fragments.JobsFragment
 import com.medtime.findrjob.fragments.ProfileFragment
 
-class JobSeekerDashboard : AppCompatActivity() {
+class JobSeekerDashboard : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_seeker_dashboard)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

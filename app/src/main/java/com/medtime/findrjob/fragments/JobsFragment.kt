@@ -4,23 +4,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.medtime.findrjob.AboutUs
+import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.JobDetailsActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.UserLogin
@@ -28,6 +24,7 @@ import com.medtime.findrjob.adapters.JobAdapter
 import com.medtime.findrjob.model.Job
 
 class JobsFragment : Fragment() {
+
     private lateinit var jobsRecyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var jobAdapter: JobAdapter
@@ -37,9 +34,35 @@ class JobsFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var appliedJobsReference: DatabaseReference
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true) // Enable options menu in fragment
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.search_view)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { filterJobs(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filterJobs(it) }
+                return true
+            }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? BaseActivity)?.setSearchQueryListener { query ->
+            filterJobs(query)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? BaseActivity)?.setSearchQueryListener(null)
     }
 
     override fun onCreateView(
@@ -58,7 +81,6 @@ class JobsFragment : Fragment() {
         jobsRecyclerView.layoutManager = LinearLayoutManager(context)
         jobAdapter = JobAdapter(jobList.toMutableList()) { job ->
             // Navigate to JobDetailsActivity when a job is clicked
-            Log.d("JobsFragment", "Job clicked: ${job.title}, ${job.company}, ${job.id}")
             val intent = Intent(requireContext(), JobDetailsActivity::class.java).apply {
                 putExtra("jobId", job.id)
                 putExtra("jobTitle", job.title)
@@ -72,38 +94,19 @@ class JobsFragment : Fragment() {
         }
         jobsRecyclerView.adapter = jobAdapter
 
-        // Initialize Firebase Realtime Database reference
+        // Firebase references
         databaseReference = FirebaseDatabase.getInstance().getReference("Job Post")
         appliedJobsReference = FirebaseDatabase.getInstance().getReference("Applications")
 
-        // Initialize SharedPreferences
         sharedPreferences = requireContext().getSharedPreferences("IgnoredJobs", 0)
 
-        // Load jobs from Firebase
         loadJobsFromFirebase()
 
         return view
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
-        val searchItem = menu.findItem(R.id.search_view)
-        val searchView = searchItem.actionView as SearchView
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { filterJobs(it) }
-                return true
-            }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { filterJobs(it) }
-                return true
-            }
-        })
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
     private fun loadJobsFromFirebase() {
         progressBar.visibility = View.VISIBLE
@@ -131,7 +134,6 @@ class JobsFragment : Fragment() {
                             for (jobSnapshot in providerSnapshot.children) {
                                 val job = jobSnapshot.getValue(Job::class.java)
                                 job?.let {
-                                    // Check if the job is ignored or applied
                                     val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", emptySet())
                                     if (!ignoredJobs!!.contains(job.id) && !appliedJobIds.contains(job.id)) {
                                         jobList.add(job)
@@ -139,7 +141,7 @@ class JobsFragment : Fragment() {
                                 }
                             }
                         }
-                        jobAdapter.updateList(jobList) // Notify adapter with the updated job list
+                        jobAdapter.updateList(jobList)
                         progressBar.visibility = View.GONE
                         jobsRecyclerView.visibility = View.VISIBLE
                     }
@@ -158,13 +160,12 @@ class JobsFragment : Fragment() {
         })
     }
 
-    private fun filterJobs(query: String) {
+    fun filterJobs(query: String) {
         val filteredList = jobList.filter { job ->
-            job.title.contains(query, ignoreCase = true) || // Search by job title
-                    job.company.contains(query, ignoreCase = true)  || // Optionally search by company name
-                    job.skills.contains(query, ignoreCase = true) // Optionally search by skills
+            job.title.contains(query, ignoreCase = true) ||
+                    job.company.contains(query, ignoreCase = true) ||
+                    job.skills.contains(query, ignoreCase = true)
         }
-
-        jobAdapter.updateList(filteredList) // Update the adapter with the filtered list
+        jobAdapter.updateList(filteredList)
     }
 }

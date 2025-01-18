@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.MyApplicationAdapter
 import com.medtime.findrjob.model.Application
@@ -56,31 +57,17 @@ class ApplicationsFragment : Fragment() {
 
         return view
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true) // Enable options menu in fragment
+    override fun onResume() {
+        super.onResume()
+        (activity as? BaseActivity)?.setSearchQueryListener { query ->
+            filterJobs(query)
+        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
-        val searchItem = menu.findItem(R.id.search_view)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { filterJobs(it) }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { filterJobs(it) }
-                return true
-            }
-        })
-
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onPause() {
+        super.onPause()
+        (activity as? BaseActivity)?.setSearchQueryListener(null)
     }
-
     private fun loadApplicationsFromDatabase() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
