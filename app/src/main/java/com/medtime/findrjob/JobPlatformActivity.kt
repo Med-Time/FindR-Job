@@ -63,7 +63,7 @@ class JobPlatformActivity : BaseActivity() {
         }
 
         jobProvider.setOnClickListener {
-            val jobProviderIntent = Intent(this, JobProvider::class.java)
+            val jobProviderIntent = Intent(this, newjobproviderdashboard::class.java)
             Log.d("Going", "To the next Activity")
             startActivity(jobProviderIntent)
         }
