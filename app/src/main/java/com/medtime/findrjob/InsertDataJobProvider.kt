@@ -80,7 +80,7 @@ class InsertDataJobProvider : AppCompatActivity() {
                     mPublicDatabase.child(id).setValue(jobPostData)
 
                     Toast.makeText(this, "Successfully Posted", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, newjobproviderdashboard::class.java))
+                    startActivity(Intent(this, JobProviderDashboard::class.java))
                 }
             }
         }

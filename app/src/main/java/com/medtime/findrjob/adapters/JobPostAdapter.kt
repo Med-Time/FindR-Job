@@ -16,6 +16,7 @@ import com.medtime.findrjob.EditJobPostActivity
 import com.medtime.findrjob.model.JobPost
 import com.medtime.findrjob.R
 
+
 class JobPostAdapter(
     private val jobList: MutableList<JobPost>,  // Make the list mutable if you need to remove items
     private val context: Context,
@@ -54,7 +55,7 @@ class JobPostAdapter(
             val jobIdToDelete = jobPost.jobId
             val providerId = FirebaseAuth.getInstance().currentUser?.uid
 
-            if (providerId != null && jobIdToDelete != null) {
+            if (providerId != null) {
                 // Correct the reference to match the database structure
                 val jobPostRef = jobPostDatabase.child(providerId).child(jobIdToDelete)
 
@@ -93,6 +94,12 @@ class JobPostAdapter(
 
     override fun getItemCount(): Int {
         return jobList.size
+    }
+
+    fun updateList(newList: List<JobPost>) {
+        jobList.clear()
+        jobList.addAll(newList)
+        notifyDataSetChanged()
     }
 
     inner class JobPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

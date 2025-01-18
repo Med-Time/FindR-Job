@@ -94,7 +94,7 @@
             android:name=".newjobprovider"
             android:exported="false" />
         <activity
-            android:name=".newjobproviderdashboard"
+            android:name=".JobProviderDashboard"
             android:exported="false" />
     </application>
 
