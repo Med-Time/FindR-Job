@@ -112,7 +112,7 @@ class UserLogin : AppCompatActivity() {
                                 "Job Provider" -> {
                                     val intent = Intent(
                                         applicationContext,
-                                        JobProviderDashboardActivity::class.java
+                                        newjobproviderdashboard::class.java
                                     )
                                     intent.putExtra("userId", userId)
                                     startActivity(intent)
@@ -196,7 +196,7 @@ class UserLogin : AppCompatActivity() {
                                 if (userType == "Job Provider") {
                                     // If userType is found, proceed to the platform
                                     Toast.makeText(this, "Google Sign-In Successful", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(applicationContext, JobProviderDashboardActivity::class.java)
+                                    val intent = Intent(applicationContext, newjobproviderdashboard::class.java)
                                     intent.putExtra("userId", userId)
                                     intent.putExtra("userType", userType)  // Pass the user type
                                     startActivity(intent)

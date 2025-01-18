@@ -2,18 +2,21 @@ package com.medtime.findrjob
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.medtime.findrjob.Model.JobPost
+import com.medtime.findrjob.adapters.JobPostAdapter
 import kotlin.collections.ArrayList
 
-class JobProviderDashboardActivity : AppCompatActivity() {
+class ProviderMain : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: JobPostAdapter
@@ -22,24 +25,29 @@ class JobProviderDashboardActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var valueEventListener: ValueEventListener
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_job_provider_dashboard)
-        jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
-        // Initialize UI elements
-        recyclerView = findViewById(R.id.recyclerViewJobApplications)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = JobPostAdapter(jobList, this,jobsDatabase)
-        recyclerView.adapter = adapter
-
-        progressBar = findViewById(R.id.progressBar)
-        progressBar.visibility = View.VISIBLE
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.activity_job_provider_dashboard, container, false)
 
         // Initialize Firebase reference
-//        jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
+        jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
+
+        // Initialize UI elements
+        recyclerView = view.findViewById(R.id.recyclerViewJobApplications)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        adapter = JobPostAdapter(jobList, requireContext(), jobsDatabase)
+        recyclerView.adapter = adapter
+
+        progressBar = view.findViewById(R.id.progressBar)
+        progressBar.visibility = View.VISIBLE
 
         // Fetch job posts for the current provider
         fetchJobPostsForProvider()
+
+        return view
     }
 
     private fun fetchJobPostsForProvider() {
@@ -48,7 +56,7 @@ class JobProviderDashboardActivity : AppCompatActivity() {
         // Ensure providerId is available
         if (providerId.isEmpty()) {
             progressBar.visibility = View.GONE
-            Toast.makeText(this, "Unable to fetch jobs. Please log in again.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Unable to fetch jobs. Please log in again.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -61,12 +69,13 @@ class JobProviderDashboardActivity : AppCompatActivity() {
                 for (snapshot in dataSnapshot.children) {
                     val jobPost = snapshot.getValue(JobPost::class.java)
                     jobPost?.let {
-                        it.jobId= snapshot.key.toString()
-                        jobList.add(it) } // Add the job post to the list
+                        it.jobId = snapshot.key.toString()
+                        jobList.add(it) // Add the job post to the list
+                    }
                 }
 
                 if (jobList.isEmpty()) {
-                    Toast.makeText(this@JobProviderDashboardActivity, "No jobs found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "No jobs found.", Toast.LENGTH_SHORT).show()
                 }
 
                 adapter.notifyDataSetChanged() // Notify the adapter that data has changed
@@ -75,7 +84,7 @@ class JobProviderDashboardActivity : AppCompatActivity() {
             override fun onCancelled(databaseError: DatabaseError) {
                 progressBar.visibility = View.GONE
                 Log.e("FirebaseError", databaseError.message)
-                Toast.makeText(this@JobProviderDashboardActivity, "Failed to load jobs", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to load jobs", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -85,8 +94,8 @@ class JobProviderDashboardActivity : AppCompatActivity() {
         return FirebaseAuth.getInstance().currentUser?.uid ?: ""
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         // Remove the Firebase listener to avoid memory leaks
         jobsDatabase.removeEventListener(valueEventListener)
     }

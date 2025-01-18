@@ -1,4 +1,4 @@
-package com.medtime.findrjob
+package com.medtime.findrjob.adapters
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,9 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
+import com.medtime.findrjob.EditJobPostActivity
 import com.medtime.findrjob.Model.JobPost
+import com.medtime.findrjob.R
 
 class JobPostAdapter(
     private val jobList: MutableList<JobPost>,  // Make the list mutable if you need to remove items
@@ -51,31 +53,39 @@ class JobPostAdapter(
         holder.btnDelete.setOnClickListener {
             val jobIdToDelete = jobPost.jobId
             val providerId = FirebaseAuth.getInstance().currentUser?.uid
-            Log.d("del", "Provider ID: $providerId, Job ID to delete: $jobIdToDelete")
 
-            if (providerId != null) {
-                // Database reference to the specific job post under the provider
-                val jobPostRef = jobPostDatabase.child("Job Post").child(providerId).child(jobIdToDelete)
+            if (providerId != null && jobIdToDelete != null) {
+                // Correct the reference to match the database structure
+                val jobPostRef = jobPostDatabase.child(providerId).child(jobIdToDelete)
 
-                // Log the database reference to ensure it's correct
-                Log.d("del", "Database reference: ${jobPostRef.toString()}")
-
-                // Attempt to remove the job post from Firebase
                 jobPostRef.removeValue().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Remove from adapter and update the UI
+                        // Remove item from list and notify adapter
                         jobList.removeAt(position)
                         notifyItemRemoved(position)
-                        Toast.makeText(context, "Job post deleted successfully", Toast.LENGTH_SHORT).show()
+                        notifyItemRangeChanged(position, jobList.size)
+
+                        Toast.makeText(
+                            holder.itemView.context,
+                            "Job post deleted successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        // Log the error and show failure message
                         Log.e("del", "Error deleting job post: ${task.exception?.message}")
-                        Toast.makeText(context, "Failed to delete job post", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            holder.itemView.context,
+                            "Failed to delete job post",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } else {
-                Log.e("del", "No provider ID found")
-                Toast.makeText(context, "Provider not logged in", Toast.LENGTH_SHORT).show()
+                Log.e("del", "No provider ID or job ID found")
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Failed to delete job post. Missing information.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

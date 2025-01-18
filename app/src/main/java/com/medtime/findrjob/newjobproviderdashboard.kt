@@ -17,7 +17,7 @@ import com.medtime.findrjob.fragments.JobsFragment
 import com.medtime.findrjob.fragments.JobsFragmentProvider
 import com.medtime.findrjob.fragments.ProfileFragment
 import com.medtime.findrjob.fragments.ProfileFragmentProvider
-import com.medtime.findrjob.fragments.ProviderMain
+
 
 class newjobproviderdashboard : AppCompatActivity() {
 

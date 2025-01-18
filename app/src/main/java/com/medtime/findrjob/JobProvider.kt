@@ -35,11 +35,11 @@ class JobProvider : AppCompatActivity() {
             startActivity(AddjobIntent)
         }
 
-        managejob = findViewById(R.id.button_manage_jobs)
-        managejob.setOnClickListener {
-            val ManagejobIntent = Intent(this, JobProviderDashboardActivity::class.java)
-            startActivity(ManagejobIntent)
-        }
+//        managejob = findViewById(R.id.button_manage_jobs)
+//        managejob.setOnClickListener {
+//            val ManagejobIntent = Intent(this, JobProviderDashboardActivity::class.java)
+//            startActivity(ManagejobIntent)
+//        }
 
         viewapplicationsButton = findViewById(R.id.button_view_applications)
         viewapplicationsButton.setOnClickListener {

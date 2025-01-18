@@ -115,7 +115,7 @@ class UserRegister : AppCompatActivity() {
                                                         startActivity(intent)
                                                         finish()
                                                     } else if (selectedUserType == "Job Provider") {
-                                                        val intent = Intent(this, JobProviderDashboardActivity::class.java)
+                                                        val intent = Intent(this, newjobproviderdashboard::class.java)
 //                                                        Toast.makeText(this, "Inside Provider Next is get Provider Details", Toast.LENGTH_SHORT).show()
                                                         intent.putExtra("userId", userId)
                                                         intent.putExtra("userType", selectedUserType)  // Pass the user type
