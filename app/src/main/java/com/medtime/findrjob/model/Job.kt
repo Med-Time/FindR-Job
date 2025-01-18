@@ -8,5 +8,5 @@ data class Job(
     val date: String = "",
     val salary: String = "",
     val skills: String = "",
-    val providerId: String = ""  // Add this line to include providerId
+    val providerId: String = ""
 )

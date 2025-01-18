@@ -14,12 +14,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.ViewApplicationProviderAdapter
-import com.medtime.findrjob.model.Application
+import com.medtime.findrjob.model.ApplicationData
 
 class ApplicationsFragmentProvider : Fragment() {
     private lateinit var applicationsRecyclerView: RecyclerView
     private lateinit var applicationAdapter: ViewApplicationProviderAdapter
-    private val applicationList = ArrayList<Application>()
+    private val applicationList = ArrayList<ApplicationData>()
     private lateinit var databaseApplications: DatabaseReference
     private lateinit var databaseJobPosts: DatabaseReference
     private lateinit var emptyView: TextView
@@ -67,7 +67,7 @@ class ApplicationsFragmentProvider : Fragment() {
         emptyView.visibility = View.GONE
        Log.d("Provider Id",providerId)
         // Fetch job posts created by this provider
-        databaseJobPosts.orderByChild("providerID").equalTo(providerId)
+        databaseJobPosts.child(providerId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(jobPostSnapshot: DataSnapshot) {
                     if (!jobPostSnapshot.exists()) {
@@ -105,8 +105,8 @@ class ApplicationsFragmentProvider : Fragment() {
 
                 for (userSnapshot in applicationSnapshot.children) { // Iterate through userIDs
                     for (application in userSnapshot.children) { // Iterate through applicationIDs
-                        val app = application.getValue(Application::class.java)
-                        if (app != null && jobIds.contains(app.jobID)) {
+                        val app = application.getValue(ApplicationData::class.java)
+                        if (app != null && jobIds.contains(app.jobId)) {
                             applicationList.add(app)
                         }
                     }

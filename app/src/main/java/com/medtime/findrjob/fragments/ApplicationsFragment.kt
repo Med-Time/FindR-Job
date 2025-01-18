@@ -22,11 +22,12 @@ import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.MyApplicationAdapter
 import com.medtime.findrjob.model.Application
+import com.medtime.findrjob.model.ApplicationData
 
 class ApplicationsFragment : Fragment() {
     private lateinit var applicationsRecyclerView: RecyclerView
     private lateinit var applicationAdapter: MyApplicationAdapter
-    private var applicationList = mutableListOf<Application>()
+    private var applicationList = mutableListOf<ApplicationData>()
     private lateinit var database: DatabaseReference
     private lateinit var emptyView: TextView
     private lateinit var progressBar: ProgressBar
@@ -91,7 +92,7 @@ class ApplicationsFragment : Fragment() {
 
                     if (snapshot.exists()) {
                         for (applicationSnapshot in snapshot.children) {
-                            val application = applicationSnapshot.getValue(Application::class.java)
+                            val application = applicationSnapshot.getValue(ApplicationData::class.java)
                             application?.let { applicationList.add(it) }
                         }
 

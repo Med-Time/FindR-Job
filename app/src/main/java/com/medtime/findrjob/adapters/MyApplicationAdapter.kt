@@ -13,9 +13,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.medtime.findrjob.R
 import com.medtime.findrjob.model.Application
+import com.medtime.findrjob.model.ApplicationData
 
 class MyApplicationAdapter(
-    private val applications: MutableList<Application>
+    private val applications: MutableList<ApplicationData>
 ) : RecyclerView.Adapter<MyApplicationAdapter.ApplicationViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApplicationViewHolder {
@@ -29,14 +30,14 @@ class MyApplicationAdapter(
         holder.bind(application)
 
         holder.fileButton.setOnClickListener {
-            if (!application.cvUrl.isNullOrEmpty()) {
+            if (!application.fileUrl.isNullOrEmpty()) {
                 // Check if it's a valid URL and handle PDF viewing
-                if (application.cvUrl.endsWith(".pdf", ignoreCase = true)) {
+                if (application.fileUrl.endsWith(".pdf", ignoreCase = true)) {
                     // Open PDF in an external viewer
-                    openPdfFile(holder, application.cvUrl)
+                    openPdfFile(holder, application.fileUrl)
                 } else {
                     // Handle other file types if necessary
-                    openUrl(holder, application.cvUrl)
+                    openUrl(holder, application.fileUrl)
                 }
             } else {
                 Toast.makeText(holder.itemView.context, "No file attached to this application.", Toast.LENGTH_SHORT).show()
@@ -84,7 +85,7 @@ class MyApplicationAdapter(
         val fileButton: Button = itemView.findViewById(R.id.fileButton)
 
         @SuppressLint("SetTextI18n")
-        fun bind(application: Application) {
+        fun bind(application: ApplicationData) {
             jobTitle.text = application.jobTitle ?: "No Title"
             applicationStatus.text = "Status : ${application.status?: "Pending"}"
             applicantEmail.text = "Email : ${application.email ?: "N/A"}"
@@ -94,11 +95,11 @@ class MyApplicationAdapter(
             jobDate.text = "Applied Date : ${application.date ?: "N/A"}"
 
             // Show file button only if CV URL is present
-            fileButton.visibility = if (!application.cvUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
+            fileButton.visibility = if (!application.fileUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
         }
     }
 
-    fun updateList(newList: List<Application>) {
+    fun updateList(newList: List<ApplicationData>) {
         applications.clear()
         applications.addAll(newList)
         notifyDataSetChanged()

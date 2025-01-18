@@ -24,7 +24,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class ViewApplicationProviderAdapter(
-    private val applicationList: ArrayList<Application>,
+    private val applicationList: ArrayList<ApplicationData>,
     private val context: Context
 ) : RecyclerView.Adapter<ViewApplicationProviderAdapter.ViewHolder>() {
 
@@ -35,17 +35,18 @@ class ViewApplicationProviderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val application = applicationList[position]
+        holder.fullName.text = application.name
         holder.address.text = application.address
         holder.contactDetail.text = application.contact
         holder.emailAddress.text = application.email
-        holder.cvUrl.text = application.cvUrl
+        holder.cvUrl.text = application.fileUrl
 
         holder.btnDownloadCv.setOnClickListener {
-            downloadAndOpenCv(application.cvUrl)
+            downloadAndOpenCv(application.fileUrl)
         }
 
         holder.cvUrl.setOnClickListener {
-            val url = application.cvUrl
+            val url = application.fileUrl
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(url)
             }
