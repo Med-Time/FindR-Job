@@ -35,7 +35,6 @@ class ViewApplicationProviderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val application = applicationList[position]
-        holder.fullName.text = application.name
         holder.address.text = application.address
         holder.contactDetail.text = application.contact
         holder.emailAddress.text = application.email

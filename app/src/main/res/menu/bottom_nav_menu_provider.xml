@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_jobs_provider"
-        android:icon="@android:drawable/ic_menu_myplaces"
+        android:icon="@drawable/ic_add_job"
         android:title="Add Jobs" />
     <item
         android:id="@+id/nav_applications_provider"

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.medtime.findrjob.Model.JobPost
+import com.medtime.findrjob.model.JobPost
 import com.medtime.findrjob.adapters.JobPostAdapter
 import kotlin.collections.ArrayList
 

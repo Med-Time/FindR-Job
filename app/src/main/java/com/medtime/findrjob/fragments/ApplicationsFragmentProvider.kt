@@ -106,7 +106,7 @@ class ApplicationsFragmentProvider : Fragment() {
                 for (userSnapshot in applicationSnapshot.children) { // Iterate through userIDs
                     for (application in userSnapshot.children) { // Iterate through applicationIDs
                         val app = application.getValue(Application::class.java)
-                        if (app != null && jobIds.contains(app.id)) {
+                        if (app != null && jobIds.contains(app.jobID)) {
                             applicationList.add(app)
                         }
                     }

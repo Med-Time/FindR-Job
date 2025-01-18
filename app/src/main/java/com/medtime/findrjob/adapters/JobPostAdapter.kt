@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.medtime.findrjob.EditJobPostActivity
-import com.medtime.findrjob.Model.JobPost
+import com.medtime.findrjob.model.JobPost
 import com.medtime.findrjob.R
 
 class JobPostAdapter(
