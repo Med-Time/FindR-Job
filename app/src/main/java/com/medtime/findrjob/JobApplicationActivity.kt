@@ -35,6 +35,7 @@ class JobApplicationActivity : AppCompatActivity() {
     private lateinit var applicationsDatabase: DatabaseReference
     private lateinit var storageReference: StorageReference
     private var fileUri: Uri? = null
+    private var userID : String? = null
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -63,11 +64,13 @@ class JobApplicationActivity : AppCompatActivity() {
         val jobId = intent.getStringExtra("jobId")
         val companyName = intent.getStringExtra("companyName")
 
+        userID = FirebaseAuth.getInstance().currentUser?.uid
+
         Log.d("JobApplicationActivity", "Job details: $jobTitle, $jobId, $companyName")
 
         // Initialize Firebase references
         applicationsDatabase = FirebaseDatabase.getInstance().reference.child("Applications")
-        storageReference = FirebaseStorage.getInstance().reference.child("CVs")
+        storageReference = FirebaseStorage.getInstance().reference.child("Seekers").child(userID!!)
 
         // Set up listeners for the buttons
         fileButton.setOnClickListener { selectFile() }
@@ -106,14 +109,14 @@ class JobApplicationActivity : AppCompatActivity() {
         val contact = sharedPreferences.getString("contactDetail", "+919XXXXXXXXX")
         val email = sharedPreferences.getString("email", "")
 
-        val userID = FirebaseAuth.getInstance().currentUser?.uid
+
         if (userID == null) {
             Toast.makeText(this, "User is not logged in.", Toast.LENGTH_SHORT).show()
             return
         }
 
         // Fetch additional details from "Seekers" table in Firebase
-        val seekersDatabase = FirebaseDatabase.getInstance().reference.child("Seekers").child(userID)
+        val seekersDatabase = FirebaseDatabase.getInstance().reference.child("Seekers").child(userID!!)
         seekersDatabase.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
                 val resumeUrl = snapshot.child("resumeUrl").value as? String

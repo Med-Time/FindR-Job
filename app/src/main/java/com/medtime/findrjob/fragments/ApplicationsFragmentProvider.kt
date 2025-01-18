@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.ViewApplicationProviderAdapter
 import com.medtime.findrjob.model.ApplicationData
@@ -24,13 +27,17 @@ class ApplicationsFragmentProvider : Fragment() {
     private lateinit var databaseJobPosts: DatabaseReference
     private lateinit var emptyView: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.activity_job_provider_dashboard, container, false)
+        toolbar = view.findViewById(R.id.custom_toolbar)
 
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar?.title = "Your Jobs"
         // Initialize views
         applicationsRecyclerView = view.findViewById(R.id.recyclerViewJobApplications)
         emptyView = view.findViewById(R.id.empty_view1)
@@ -49,6 +56,18 @@ class ApplicationsFragmentProvider : Fragment() {
         loadApplicationsForProvider()
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? BaseActivity)?.setSearchQueryListener { query ->
+            filterJobs(query)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? BaseActivity)?.setSearchQueryListener(null)
     }
 
     private fun loadApplicationsForProvider() {
@@ -135,5 +154,13 @@ class ApplicationsFragmentProvider : Fragment() {
         emptyView.visibility = View.VISIBLE
         applicationsRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
+    }
+
+    private fun filterJobs(query: String) {
+        val filteredList = applicationList.filter { job ->
+            job.company?.contains(query, ignoreCase = true) ?: true || // Search by job title
+            job.jobTitle?.contains(query, ignoreCase = true) ?: true // Optionally search by skills
+        }
+        applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
     }
 }
