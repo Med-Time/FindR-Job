@@ -118,7 +118,6 @@ class UserLogin : AppCompatActivity() {
                                     startActivity(intent)
                                     finish()
                                 }
-
                             }
                         } else {
                             loginProgress.visibility = View.VISIBLE
@@ -215,16 +214,5 @@ class UserLogin : AppCompatActivity() {
                     Toast.makeText(this, "Google Sign-In Failed", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-
-    private fun handleRadioButtonSelection(checkedId: Int) {
-        val selectedRadioButton = findViewById<android.widget.RadioButton>(checkedId)
-        val selectedText = selectedRadioButton.text.toString()
-        showToast("Selected: $selectedText")
-
-    }
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

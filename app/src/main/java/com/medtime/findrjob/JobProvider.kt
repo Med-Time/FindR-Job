@@ -2,7 +2,6 @@ package com.medtime.findrjob
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -14,37 +13,35 @@ class JobProvider : AppCompatActivity() {
     private lateinit var profile: Button
     private lateinit var addjob: Button
     private lateinit var managejob: Button
-    private lateinit var viewapplicationsButton: Button
+    private lateinit var viewApplicationsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_job_provider)
-        Log.d("Arrived", "At first")
 
         // Initialize buttons and set onClickListeners
         profile = findViewById(R.id.button_profile)
         profile.setOnClickListener {
-            val ProfileIntent = Intent(this, ProviderAccountDetails::class.java)
-            startActivity(ProfileIntent)
+            val profileIntent = Intent(this, ProviderAccountDetails::class.java)
+            startActivity(profileIntent)
         }
 
         addjob = findViewById(R.id.button_add_job)
         addjob.setOnClickListener {
-            val AddjobIntent = Intent(this, InsertDataJobProvider::class.java)
-            startActivity(AddjobIntent)
+            val addJobIntent = Intent(this, InsertDataJobProvider::class.java)
+            startActivity(addJobIntent)
         }
-
         managejob = findViewById(R.id.button_manage_jobs)
         managejob.setOnClickListener {
-            val ManagejobIntent = Intent(this, JobProviderDashboardActivity::class.java)
-            startActivity(ManagejobIntent)
+            val manageJobIntent = Intent(this, JobProviderDashboardActivity::class.java)
+            startActivity(manageJobIntent)
         }
 
-        viewapplicationsButton = findViewById(R.id.button_view_applications)
-        viewapplicationsButton.setOnClickListener {
-            val ViewapplicationsIntent = Intent(this, viewapplicationdashborad::class.java)
-            startActivity(ViewapplicationsIntent)
+        viewApplicationsButton = findViewById(R.id.button_view_applications)
+        viewApplicationsButton.setOnClickListener {
+            val viewApplicationsIntent = Intent(this, viewapplicationdashborad::class.java)
+            startActivity(viewApplicationsIntent)
         }
 
         // Floating Action Button

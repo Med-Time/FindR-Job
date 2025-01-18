@@ -34,11 +34,6 @@ class JobProviderDashboardActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progressBar)
         progressBar.visibility = View.VISIBLE
-
-        // Initialize Firebase reference
-//        jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
-
-        // Fetch job posts for the current provider
         fetchJobPostsForProvider()
     }
 

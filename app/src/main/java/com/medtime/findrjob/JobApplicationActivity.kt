@@ -273,6 +273,7 @@ class JobApplicationActivity : AppCompatActivity() {
         builder.setTitle("Application Submitted")
         builder.setMessage("The company will contact you shortly.")
         builder.setPositiveButton("OK") { _, _ ->
+            startActivity(Intent(this, JobSeekerDashboard::class.java))
             finish() // Finish activity and return to previous fragment
         }
         builder.setCancelable(false)

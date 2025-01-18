@@ -29,7 +29,6 @@ class JobPlatformActivity : BaseActivity() {
 
         aboutMe = findViewById(R.id.realProfileImage)
         accountDetails = findViewById(R.id.accountDetailsImage)
-//        logout = findViewById(R.id.logoutButton)
         jobProvider = findViewById(R.id.jobProviderImage)
         jobSeeker = findViewById(R.id.jobSeekerImage)
         setupToolbar()
