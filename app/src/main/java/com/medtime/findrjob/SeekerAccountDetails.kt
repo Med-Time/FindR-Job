@@ -59,7 +59,7 @@ class SeekerAccountDetails : BaseActivity() {
         // Initialize Firebase references
         userDatabase = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
         seekerDatabase = FirebaseDatabase.getInstance().getReference("Seekers").child(userId!!)
-        storageReference = FirebaseStorage.getInstance().reference.child("Profiles").child(userId!!)
+        storageReference = FirebaseStorage.getInstance().reference.child("Seekers").child(userId!!)
 
         // Fetch user and seeker details and populate
         fetchUserDetails()

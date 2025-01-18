@@ -1,8 +1,8 @@
 package com.medtime.findrjob.model
 
 data class Job(
-    val id: String = "",
-    val company:String = "",
+    var id: String = "",
+    var company:String = "",
     val title: String = "",
     val description: String = "",
     val date: String = "",

@@ -130,20 +130,36 @@ class JobsFragment : Fragment() {
                 databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         jobList.clear()
+                        val providerRef = FirebaseDatabase.getInstance().getReference("Providers")
+
                         for (providerSnapshot in snapshot.children) {
-                            for (jobSnapshot in providerSnapshot.children) {
-                                val job = jobSnapshot.getValue(Job::class.java)
-                                job?.let {
-                                    val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", emptySet())
-                                    if (!ignoredJobs!!.contains(job.id) && !appliedJobIds.contains(job.id)) {
-                                        jobList.add(job)
+                            val providerID = providerSnapshot.key.toString()
+
+                            providerRef.child(providerID).addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(providerData: DataSnapshot) {
+                                    val companyName = providerData.child("companyName").value.toString()
+
+                                    for (jobSnapshot in providerSnapshot.children) {
+                                        val job = jobSnapshot.getValue(Job::class.java)
+                                        job!!.id = jobSnapshot.key.toString()
+                                        job.company = companyName // Add companyName to the job
+
+                                        val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", emptySet())
+                                        if (!ignoredJobs!!.contains(job.id) && !appliedJobIds.contains(job.id)) {
+                                            jobList.add(job)
+                                        }
                                     }
+                                    jobAdapter.updateList(jobList)
+                                    progressBar.visibility = View.GONE
+                                    jobsRecyclerView.visibility = View.VISIBLE
                                 }
-                            }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    progressBar.visibility = View.GONE
+                                    Toast.makeText(context, "Failed to load provider details: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
                         }
-                        jobAdapter.updateList(jobList)
-                        progressBar.visibility = View.GONE
-                        jobsRecyclerView.visibility = View.VISIBLE
                     }
 
                     override fun onCancelled(error: DatabaseError) {

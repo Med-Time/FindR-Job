@@ -61,11 +61,20 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun logoutUser() {
+        // Clear all SharedPreferences
+        val sharedPref = getSharedPreferences("IgnoredJobs", MODE_PRIVATE)
+        sharedPref.edit().clear().apply()
+
+        // Sign out the user from FirebaseAuth
         FirebaseAuth.getInstance().signOut()
+
+        // Navigate to the login screen
         val logoutIntent = Intent(this, UserLogin::class.java)
+        logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(logoutIntent)
         finish()
     }
+
 
     open fun showAboutUs() {
         val aboutIntent = Intent(this, AboutUs::class.java)

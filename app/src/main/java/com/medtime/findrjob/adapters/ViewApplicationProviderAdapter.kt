@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtime.findrjob.R
 import com.medtime.findrjob.model.Application
 import com.medtime.findrjob.model.ApplicationData
+import com.medtime.findrjob.model.JobPost
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -114,5 +115,10 @@ class ViewApplicationProviderAdapter(
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(intent)
+    }
+    fun updateList(newList: List<ApplicationData>) {
+        applicationList.clear()
+        applicationList.addAll(newList)
+        notifyDataSetChanged()
     }
 }
