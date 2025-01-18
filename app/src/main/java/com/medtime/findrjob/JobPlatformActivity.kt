@@ -3,23 +3,18 @@ package com.medtime.findrjob
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class JobPlatformActivity : AppCompatActivity() {
+class JobPlatformActivity : BaseActivity() {
     private lateinit var jobProvider: ImageView
     private lateinit var jobSeeker: ImageView
     private lateinit var aboutMe: ImageView
     private lateinit var accountDetails: ImageView
-    private lateinit var toolbar: Toolbar
-    private lateinit var logout: ImageButton
     private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +29,10 @@ class JobPlatformActivity : AppCompatActivity() {
 
         aboutMe = findViewById(R.id.realProfileImage)
         accountDetails = findViewById(R.id.accountDetailsImage)
-        logout = findViewById(R.id.logoutButton)
+//        logout = findViewById(R.id.logoutButton)
         jobProvider = findViewById(R.id.jobProviderImage)
         jobSeeker = findViewById(R.id.jobSeekerImage)
-        toolbar = findViewById(R.id.custom_toolbar)
-        setSupportActionBar(toolbar)
+        setupToolbar()
         supportActionBar?.title = "FindR Job Platform"
 
         userId = intent.getStringExtra("userId") ?: FirebaseAuth.getInstance().currentUser?.uid
@@ -62,13 +56,6 @@ class JobPlatformActivity : AppCompatActivity() {
         aboutMe.setOnClickListener {
             val aboutUsIntent = Intent(this, AboutUs::class.java)
             startActivity(aboutUsIntent)
-        }
-
-        logout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            val logoutIntent = Intent(this, UserLogin::class.java)
-            startActivity(logoutIntent)
-            finish()
         }
 
         jobSeeker.setOnClickListener {

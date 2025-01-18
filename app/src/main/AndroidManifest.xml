@@ -9,16 +9,21 @@
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.FindRJob"
-        tools:targetApi="31">
+        tools:targetApi="34">
+        <activity
+            android:name=".JobDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".JobSeekerDashboard"
             android:exported="false" />
-        <activity android:name=".SeekerAccountDetails"
+        <activity
+            android:name=".SeekerAccountDetails"
             android:exported="false"
             android:theme="@style/Theme.FindRJob" />
         <activity

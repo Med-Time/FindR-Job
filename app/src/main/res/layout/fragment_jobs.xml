@@ -1,47 +1,31 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/custom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#E79317"
-        android:elevation="4dp"
-        android:padding="8dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:background="?attr/colorPrimary"
+        android:titleTextColor="#FFFFFF"
+        android:elevation="4dp" />
 
-        <ImageButton
-            android:id="@+id/logoutButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="end"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Logout"
-            android:src="@drawable/baseline_logout_24" />
+    <!-- RecyclerView for jobs -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/jobs_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="660dp"
+        android:layout_marginTop="65dp" />
 
-    </androidx.appcompat.widget.Toolbar>
-    <TextView
-        android:id="@+id/jobs_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Available Jobs"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
+    <!-- ProgressBar to show loading state -->
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="visible" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:padding="16dp"
-        android:id="@+id/jobs_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/jobs_title" />
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -4,10 +4,15 @@ package com.medtime.findrjob.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,14 +27,21 @@ class ApplicationsFragment : Fragment() {
     private lateinit var applicationAdapter: MyApplicationAdapter
     private var applicationList = mutableListOf<Application>()
     private lateinit var database: DatabaseReference
-    private lateinit var emptyView: TextView // For displaying "no applications found" message
-    private lateinit var progressBar: ProgressBar // For showing loading progress
+    private lateinit var emptyView: TextView
+    private lateinit var progressBar: ProgressBar
+
+    private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_applications, container, false)
+        // Initialize toolbar
+        toolbar = view.findViewById(R.id.custom_toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Your Applications"
+
         applicationsRecyclerView = view.findViewById(R.id.applications_recycler_view)
         emptyView = view.findViewById(R.id.empty_view) // TextView for empty state
         progressBar = view.findViewById(R.id.progress_bar) // Progress bar
@@ -40,15 +52,36 @@ class ApplicationsFragment : Fragment() {
         applicationsRecyclerView.adapter = applicationAdapter
 
         database = FirebaseDatabase.getInstance().getReference("Applications")
-
-        Log.d("ApplicationsFragment", "onCreateView called, RecyclerView initialized.")
         loadApplicationsFromDatabase()
 
         return view
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true) // Enable options menu in fragment
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.search_view)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { filterJobs(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filterJobs(it) }
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
     private fun loadApplicationsFromDatabase() {
-        Log.d("ApplicationsFragment", "loadApplicationsFromDatabase called.")
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
             Log.e("ApplicationsFragment", "User not logged in.")
@@ -59,23 +92,19 @@ class ApplicationsFragment : Fragment() {
             return
         }
 
-        Log.d("ApplicationsFragment", "User logged in, userId: $userId")
-
         // Show progress bar while data is being fetched
         progressBar.visibility = View.VISIBLE
         applicationsRecyclerView.visibility = View.GONE
         emptyView.visibility = View.GONE
 
-        database.orderByChild("userId").equalTo(userId)
+        database.child(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("ApplicationsFragment", "onDataChange called, snapshot exists: ${snapshot.exists()}")
                     applicationList.clear() // Clear the existing data before adding new data
 
                     if (snapshot.exists()) {
                         for (applicationSnapshot in snapshot.children) {
                             val application = applicationSnapshot.getValue(Application::class.java)
-                            Log.d("ApplicationsFragment", "Retrieved application: $application")
                             application?.let { applicationList.add(it) }
                         }
 
@@ -104,5 +133,13 @@ class ApplicationsFragment : Fragment() {
                     progressBar.visibility = View.GONE
                 }
             })
+    }
+    private fun filterJobs(query: String) {
+        val filteredList = applicationList.filter { job ->
+            job.jobTitle?.contains(query, ignoreCase = true) ?: true || // Search by job title
+                    job.company?.contains(query, ignoreCase = true) ?: true|| // Optionally search by company name
+                    job.status?.contains(query, ignoreCase = true) ?: true // Optionally search by skills
+        }
+        applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
     }
 }

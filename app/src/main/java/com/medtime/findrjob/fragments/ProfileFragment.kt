@@ -13,12 +13,15 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        // Start SeekerAccountDetails Activity directly
         val intent = Intent(requireContext(), SeekerAccountDetails::class.java)
         startActivity(intent)
-        requireActivity().supportFragmentManager.popBackStack()
 
-        // Return an empty view since we're immediately transitioning
-        return View(requireContext())
+        // Optionally, finish the current activity (if you're transitioning out of the current one)
+        requireActivity().finish()
+
+        // Return an empty view since we are directly transitioning to the new activity
+        return View(requireContext()) // Return a dummy view
     }
 }

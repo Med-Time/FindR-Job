@@ -1,4 +1,4 @@
-package com.medtime.findrjob.Model
+package com.medtime.findrjob.model
 
 data class JobPost(
     val title: String = "",

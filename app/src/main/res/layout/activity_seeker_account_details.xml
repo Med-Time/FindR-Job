@@ -1,214 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#8383E7"
     android:id="@+id/main"
-    android:background="@drawable/background"
+    android:orientation="vertical">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@drawable/background"
-        android:elevation="2dp">
+        android:gravity="center_horizontal">
 
-        <!-- User Profile Heading -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Your Details"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp" />
-
-        <ImageView
-            android:id="@+id/imageViewProfilePicture"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/circular_image"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/fui_ic_anonymous_white_24dp" />
-
-        <Button
-            android:id="@+id/buttonUploadLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="Update Profile Image"
-            android:backgroundTint="@color/teal_200"
-            android:textColor="#FFFFFF" />
-
-        <!-- Name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Full Name"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/editTextName"
+        <!-- Profile Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Full Name"
-            android:inputType="textPersonName"
-            android:minHeight="48dp" />
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
 
-        <!-- Email -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Email"
-            android:textSize="16sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center_horizontal"
+                android:background="@drawable/background">
 
-        <EditText
-            android:id="@+id/editTextEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:minHeight="48dp" />
+                <!-- Profile Image -->
+                <ImageView
+                    android:id="@+id/imageViewProfilePicture"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="8dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circular_image"
+                    app:srcCompat="@drawable/man_dummy" />
 
-        <!-- Education -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Education"
-            android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/textViewFullName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Full Name"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_primary" />
 
-        <EditText
-            android:id="@+id/editTextEducation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Enter your Qualifications"
-            android:inputType="text"
-            android:minHeight="48dp" />
+                <TextView
+                    android:id="@+id/textViewEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="email@example.com"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_primary" />
 
-        <!-- Location -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Location"
-            android:textSize="16sp" />
+                <Button
+                    android:id="@+id/buttonEditProfileImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Edit Profile Image"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/teal_200" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <EditText
-            android:id="@+id/editTextLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Enter your Location"
-            android:inputType="textPostalAddress"
-            android:minHeight="48dp" />
-
-        <!-- Skills -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Skills"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/editTextSkills"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Skills"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <!-- Job Preferences -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Job Preferences"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/editTextPreferences"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:hint="Enter your job preferences"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <!-- Resume Interaction -->
-        <TextView
-            android:id="@+id/resumeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Resume"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/viewResumeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="View Resume"
-            android:visibility="visible" /> <!-- Initially visible -->
-
-        <Button
-            android:id="@+id/resume"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Upload Resume"
-            android:visibility="gone" /> <!-- Initially hidden -->
-
-        <!-- Edit and Save Buttons -->
+        <!-- User Details Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingEnd="20dp"
-            android:layout_marginTop="24dp">
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/buttonEdit"
-                android:layout_width="120dp"
+            <!-- Education -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:text="Education"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewEducation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bachelor's in Computer Science"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
+                <ImageView
+                    android:id="@+id/editEducationIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="edit"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="end"/>
+            </LinearLayout>
+
+            <!-- Location -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="New York"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
+                <ImageView
+                    android:id="@+id/editLocationIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="edit"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="end"/>
+            </LinearLayout>
+
+            <!-- Skills -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Skills"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewSkills"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Java, Android Development, Kotlin"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
+                <ImageView
+                    android:id="@+id/editSkillsIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="edit"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="end"/>
+            </LinearLayout>
+
+            <!-- Job Preferences -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Job Preferences"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/textViewPreferences"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Full-time, Remote"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
+                <ImageView
+                    android:id="@+id/editPreferencesIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="edit"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="end"/>
+            </LinearLayout>
+
+            <!-- Resume Interaction -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/resumeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Resume"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
+            <ImageView
+                android:id="@+id/editResumeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="edit"
+                android:src="@drawable/ic_edit"
+                android:layout_marginEnd="30dp"
+                android:gravity="end"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/viewResumeButton"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="View Resume"
+                    android:visibility="visible" /> <!-- Initially visible -->
+            </LinearLayout>
+
+            <!-- Save Changes Button -->
+            <Button
+                android:id="@+id/buttonSaveChanges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save Changes"
+                android:textColor="@color/white"
                 android:backgroundTint="@color/teal_200"
-                android:text="Edit"
-                android:textSize="18sp"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/buttonSave"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:backgroundTint="#289D15"
-                android:text="Save"
-                android:textSize="18sp"
-                android:textColor="#FFFFFF"
                 android:visibility="gone"
-                android:layout_marginStart="56dp" />
+                android:layout_marginTop="16dp" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/resetPasswordButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reset Password"
-            android:layout_margin="16dp"
-            android:layout_gravity="center"
-            android:backgroundTint="#FF9800" />
     </LinearLayout>
 </ScrollView>
+</LinearLayout>
