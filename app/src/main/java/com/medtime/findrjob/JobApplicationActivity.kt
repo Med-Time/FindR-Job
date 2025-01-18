@@ -1,13 +1,10 @@
 package com.medtime.findrjob
 
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Button
@@ -37,8 +34,6 @@ class JobApplicationActivity : AppCompatActivity() {
     private var fileUri: Uri? = null
     private var userID : String? = null
 
-    private lateinit var sharedPreferences: SharedPreferences
-
     companion object {
         private const val PICK_FILE_REQUEST = 1
         private const val MAX_FILE_SIZE = 5 * 1024 * 1024L // 5 MB
@@ -56,8 +51,6 @@ class JobApplicationActivity : AppCompatActivity() {
         submitApplication = findViewById(R.id.submitApplication)
         fileButton = findViewById(R.id.selectFileButton)
         selectedFileName = findViewById(R.id.selectedFileName)
-
-        sharedPreferences = getSharedPreferences("IgnoredJobs", 0)
 
         // Get job title and job ID from the Intent
         val jobTitle = intent.getStringExtra("jobTitle")
@@ -250,13 +243,6 @@ class JobApplicationActivity : AppCompatActivity() {
         resumeUrl: String
     ) {
 
-        Log.d("JobApplicationActivity", "Saving application: $userId, $jobId, $jobTitle, $companyName")
-
-        val sharedPreferences = getSharedPreferences("IgnoredJobs", 0)
-        val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", mutableSetOf())!!
-        ignoredJobs.add(jobId)
-        sharedPreferences.edit().putStringSet("ignoredJobs", ignoredJobs).apply()
-
         val id = applicationsDatabase.push().key
         if (id != null) {
             val applicationData = ApplicationData(jobId, jobTitle,companyName, name, addr, contact, email, resumeUrl)
@@ -270,29 +256,17 @@ class JobApplicationActivity : AppCompatActivity() {
         }
     }
 
-    // Show dialog and finish activity
     private fun showApplicationSubmittedDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Application Submitted")
         builder.setMessage("The company will contact you shortly.")
         builder.setPositiveButton("OK") { _, _ ->
-            startActivity(Intent(this, JobSeekerDashboard::class.java))
-            finish() // Finish activity and return to previous fragment
+            val intent = Intent(this, JobSeekerDashboard::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            finish()
         }
         builder.setCancelable(false)
         builder.show()
-    }
-
-
-    // Method to download and open the CV
-    private fun downloadAndOpenCV(fileUrl: String) {
-        val request = DownloadManager.Request(Uri.parse(fileUrl)).apply {
-            setTitle("Downloading CV")
-            setDescription("Downloading CV from Firebase Storage")
-            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "CV.pdf")
-        }
-        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        downloadManager.enqueue(request)
     }
 }
