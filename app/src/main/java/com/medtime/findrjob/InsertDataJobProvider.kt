@@ -75,7 +75,7 @@ class InsertDataJobProvider : AppCompatActivity() {
                     val id = mJobPost.push().key ?: ""
                     val date = DateFormat.getDateInstance().format(Date())
 
-                    val jobPostData = JobPostData(title, description, skills, salary, id, date)
+                    val jobPostData = JobPostData(title, description, skills, salary, date)
                     mJobPost.child(id).setValue(jobPostData)
                     mPublicDatabase.child(id).setValue(jobPostData)
 

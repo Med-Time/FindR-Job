@@ -27,7 +27,7 @@ class JobsFragmentProvider : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var mJobPost: DatabaseReference
-    private lateinit var mPublicDatabase: DatabaseReference
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +41,6 @@ class JobsFragmentProvider : Fragment() {
         val uId = mUser?.uid.orEmpty()
 
         mJobPost = FirebaseDatabase.getInstance().getReference("Job Post").child(uId)
-        mPublicDatabase = FirebaseDatabase.getInstance().getReference("Public database")
 
         // Initialize Views
         jobTitle = view.findViewById(R.id.jobTitle)
@@ -78,9 +77,8 @@ class JobsFragmentProvider : Fragment() {
                     val id = mJobPost.push().key ?: ""
                     val date = DateFormat.getDateInstance().format(Date())
 
-                    val jobPostData = JobPostData(title, description, skills, salary, id, date)
+                    val jobPostData = JobPostData(title, description, skills, salary, date)
                     mJobPost.child(id).setValue(jobPostData)
-                    mPublicDatabase.child(id).setValue(jobPostData)
 
                     Toast.makeText(requireContext(), "Successfully Posted", Toast.LENGTH_SHORT).show()
                 }
