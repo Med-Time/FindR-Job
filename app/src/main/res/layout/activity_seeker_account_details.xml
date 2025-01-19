@@ -232,6 +232,8 @@
                 android:layout_marginEnd="30dp"
                 android:gravity="end"/>
             </LinearLayout>
+
+            <!-- Save Changes Button -->
             <Button
                 android:id="@+id/viewResumeButton"
                 android:layout_width="200dp"
@@ -239,7 +241,6 @@
                 android:text="View Resume"
                 android:visibility="visible" />
 
-            <!-- Save Changes Button -->
             <Button
                 android:id="@+id/buttonSaveChanges"
                 android:layout_width="match_parent"

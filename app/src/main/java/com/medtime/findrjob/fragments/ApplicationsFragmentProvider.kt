@@ -1,5 +1,6 @@
 package com.medtime.findrjob.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.medtime.findrjob.ApplicantsDetail
 import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.ViewApplicationProviderAdapter
@@ -22,7 +25,7 @@ import com.medtime.findrjob.model.ApplicationData
 class ApplicationsFragmentProvider : Fragment() {
     private lateinit var applicationsRecyclerView: RecyclerView
     private lateinit var applicationAdapter: ViewApplicationProviderAdapter
-    private val applicationList = ArrayList<ApplicationData>()
+    private val applicationList = mutableListOf<ApplicationData>()
     private lateinit var databaseApplications: DatabaseReference
     private lateinit var databaseJobPosts: DatabaseReference
     private lateinit var emptyView: TextView
@@ -38,6 +41,7 @@ class ApplicationsFragmentProvider : Fragment() {
 
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.title = "Your Jobs"
+
         // Initialize views
         applicationsRecyclerView = view.findViewById(R.id.recyclerViewJobApplications)
         emptyView = view.findViewById(R.id.empty_view1)
@@ -45,9 +49,25 @@ class ApplicationsFragmentProvider : Fragment() {
 
         // Setup RecyclerView with LinearLayoutManager and Adapter
         applicationsRecyclerView.layoutManager = LinearLayoutManager(context)
-        applicationAdapter = ViewApplicationProviderAdapter(applicationList, requireContext())
-        applicationsRecyclerView.adapter = applicationAdapter
+//        applicationAdapter = ViewApplicationProviderAdapter(applicationList, requireContext()) { application ->
+//            onApplicationClick(application) // Click listener for applications
+//        }
+        applicationAdapter = ViewApplicationProviderAdapter(applicationList, requireContext()) { job ->
+            // Navigate to JobDetailsActivity when a job is clicked
+            val intent = Intent(requireContext(), ApplicantsDetail::class.java).apply {
+                putExtra("jobId", job.jobId)
+                putExtra("jobTitle", job.jobTitle)
+                putExtra("companyName", job.company)
+                putExtra("email", job.email)
+                putExtra("jobDate", job.date)
+                putExtra("contact", job.contact)
+                putExtra("address", job.address)
+                putExtra("resume", job.fileUrl)
+            }
+            startActivity(intent)
+        }
 
+     applicationsRecyclerView.adapter = applicationAdapter
         // Initialize Firebase database references
         databaseApplications = FirebaseDatabase.getInstance().getReference("Applications")
         databaseJobPosts = FirebaseDatabase.getInstance().getReference("Job Post")
@@ -80,12 +100,10 @@ class ApplicationsFragmentProvider : Fragment() {
             return
         }
 
-        // Show progress bar while fetching data
         progressBar.visibility = View.VISIBLE
         applicationsRecyclerView.visibility = View.GONE
         emptyView.visibility = View.GONE
-       Log.d("Provider Id",providerId)
-        // Fetch job posts created by this provider
+
         databaseJobPosts.child(providerId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(jobPostSnapshot: DataSnapshot) {
@@ -97,11 +115,9 @@ class ApplicationsFragmentProvider : Fragment() {
 
                     val jobIds = mutableListOf<String>()
                     for (jobSnapshot in jobPostSnapshot.children) {
-                        val jobId = jobSnapshot.key
-                        jobId?.let { jobIds.add(it) }
+                        jobSnapshot.key?.let { jobIds.add(it) }
                     }
 
-                    // Fetch applications for the retrieved job IDs
                     fetchApplicationsForJobIds(jobIds)
                 }
 
@@ -122,8 +138,8 @@ class ApplicationsFragmentProvider : Fragment() {
             override fun onDataChange(applicationSnapshot: DataSnapshot) {
                 applicationList.clear()
 
-                for (userSnapshot in applicationSnapshot.children) { // Iterate through userIDs
-                    for (application in userSnapshot.children) { // Iterate through applicationIDs
+                for (userSnapshot in applicationSnapshot.children) {
+                    for (application in userSnapshot.children) {
                         val app = application.getValue(ApplicationData::class.java)
                         if (app != null && jobIds.contains(app.jobId)) {
                             applicationList.add(app)
@@ -155,12 +171,23 @@ class ApplicationsFragmentProvider : Fragment() {
         applicationsRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
     }
-
     private fun filterJobs(query: String) {
         val filteredList = applicationList.filter { job ->
-            job.company?.contains(query, ignoreCase = true) ?: true || // Search by job title
-            job.jobTitle?.contains(query, ignoreCase = true) ?: true // Optionally search by skills
+            job.company?.contains(query, ignoreCase = true) ?: true || // Search by company
+                    job.jobTitle?.contains(query, ignoreCase = true) ?: true // Search by job title
         }
-        applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
+        applicationAdapter.updateList(filteredList)
+        applicationAdapter.notifyDataSetChanged() // Add this line
     }
+
+
+    // Function to handle application clicks
+    private fun onApplicationClick(application: ApplicationData) {
+        // Handle the click on the application item
+        // You might want to navigate to an application detail screen or show a dialog with more information
+//        Log.d("ApplicationsFragment", "Application clicked: ${application.jobId}"
+        Toast.makeText(requireContext(),"clicked on application id ${application.jobId}",Toast.LENGTH_SHORT).show()
+        // Implement further logic, such as opening a new fragment or activity to show application details
+    }
+
 }

@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -23,8 +22,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class ViewApplicationProviderAdapter(
-    private val applicationList: ArrayList<ApplicationData>,
-    private val context: Context
+    private val applicationList: MutableList<ApplicationData>,
+    private val context: Context,
+    private val onApplcationClick: (ApplicationData) -> Unit
 ) : RecyclerView.Adapter<ViewApplicationProviderAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,26 +34,29 @@ class ViewApplicationProviderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val application = applicationList[position]
+        holder.jobTitle.text = application.jobTitle
         holder.fullName.text = application.name
         holder.address.text = application.address
-        holder.contactDetail.text = application.contact
+//        holder.contactDetail.text = application.contact
         holder.emailAddress.text = application.email
-        holder.company.text = application.company
+        holder.date.text = application.date
+//        holder.company.text = application.company
+        holder.itemView.setOnClickListener { onApplcationClick(application)}
 
-        holder.btnopencv.setOnClickListener {
-            if (!application.fileUrl.isNullOrEmpty()) {
-                // Check if it's a valid URL and handle PDF viewing
-                if (application.fileUrl.endsWith(".pdf", ignoreCase = true)) {
-                    // Open PDF in an external viewer
-                    openPdfFile(holder, application.fileUrl)
-                } else {
-                    // Handle other file types if necessary
-                    openUrl(holder, application.fileUrl)
-                }
-            } else {
-                Toast.makeText(holder.itemView.context, "No file attached to this application.", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        holder.btnopencv.setOnClickListener {
+//            if (!application.fileUrl.isNullOrEmpty()) {
+//                // Check if it's a valid URL and handle PDF viewing
+//                if (application.fileUrl.endsWith(".pdf", ignoreCase = true)) {
+//                    // Open PDF in an external viewer
+//                    openPdfFile(holder, application.fileUrl)
+//                } else {
+//                    // Handle other file types if necessary
+//                    openUrl(holder, application.fileUrl)
+//                }
+//            } else {
+//                Toast.makeText(holder.itemView.context, "No file attached to this application.", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
 //        holder.btnDownloadCv.setOnClickListener {
 //            downloadAndOpenCv(application.fileUrl)
@@ -96,14 +99,15 @@ class ViewApplicationProviderAdapter(
         }
     }
 
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val jobTitle: TextView = itemView.findViewById(R.id.job_title)
         val fullName: TextView = itemView.findViewById(R.id.fullName)
         val address: TextView = itemView.findViewById(R.id.address)
-        val contactDetail: TextView = itemView.findViewById(R.id.contactDetail)
+//        val contactDetail: TextView = itemView.findViewById(R.id.contactDetail)
         val emailAddress: TextView = itemView.findViewById(R.id.emailAddress)
-        val company: TextView = itemView.findViewById(R.id.company)
-        val btnopencv: Button = itemView.findViewById(R.id.opencv)
+//        val company: TextView = itemView.findViewById
+          val date: TextView = itemView.findViewById(R.id.jobDate)
+///val btnopencv: Button = itemView.findViewById(R.id.opencv)
     }
 
     private fun downloadAndOpenCv(cvUrl: String?) {
