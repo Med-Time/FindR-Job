@@ -3,6 +3,7 @@ package com.medtime.findrjob
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -17,6 +18,7 @@ class SelectUserType : AppCompatActivity() {
     private lateinit var userTypeGroup: RadioGroup
     private lateinit var submitButton: Button
     private lateinit var firebaseAuth: FirebaseAuth
+    private var name : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,10 @@ class SelectUserType : AppCompatActivity() {
         userTypeGroup = findViewById(R.id.userTypeGroup)
         submitButton = findViewById(R.id.submitButton)
         firebaseAuth = FirebaseAuth.getInstance()
+        name = findViewById<EditText>(R.id.name).text.toString()
+        val email = intent.getStringExtra("email")
+        val userId = intent.getStringExtra("userId")
+
 
         submitButton.setOnClickListener {
             val selectedUserTypeId = userTypeGroup.checkedRadioButtonId
@@ -39,23 +45,34 @@ class SelectUserType : AppCompatActivity() {
             } else {
                 val selectedUserType = findViewById<RadioButton>(selectedUserTypeId).text.toString()
 
+                val user = mapOf(
+                    "email" to email,
+                    "fullname" to name,
+                    "userType" to selectedUserType
+                )
+
                 // Save userType to Firebase
-                val userId = firebaseAuth.currentUser?.uid
                 val userDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!)
-                userDatabase.child("userType").setValue(selectedUserType)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "User type updated successfully", Toast.LENGTH_SHORT).show()
-                            // Redirect to platform or another activity
-                            val intent = Intent(this, JobPlatformActivity::class.java)
-                            intent.putExtra("userId", userId)
-                            intent.putExtra("userType", selectedUserType)
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Failed to update user type", Toast.LENGTH_SHORT).show()
+                userDatabase.setValue(user).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        when (selectedUserType) {
+                            "Job Seeker" -> {
+                                val intent = Intent(this, JobSeekerDashboard::class.java)
+                                intent.putExtra("userId", userId)
+                                startActivity(intent)
+                                finish()
+                            }
+                            "Job Provider" -> {
+                                val intent = Intent(this, JobProviderDashboard::class.java)
+                                intent.putExtra("userId", userId)
+                                startActivity(intent)
+                                finish()
+                            }
                         }
+                    } else {
+                        Toast.makeText(this, "Failed to save user type", Toast.LENGTH_SHORT).show()
                     }
+                }
             }
         }
     }

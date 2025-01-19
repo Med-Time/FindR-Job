@@ -26,6 +26,7 @@ class UserLogin : AppCompatActivity() {
     private lateinit var loginProgress: ProgressBar
     private lateinit var firebaseAuth: FirebaseAuth
     private var userId: String? = null
+    private var userType: String? = null
 
     // Google Sign-In setup
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -87,8 +88,29 @@ class UserLogin : AppCompatActivity() {
                         val currentUser = firebaseAuth.currentUser
                         if (currentUser != null && currentUser.isEmailVerified) {
                             userId = currentUser.uid
+                            val userType = handleRadioButtonClick(findViewById(userTypeGroup.checkedRadioButtonId))
+                            when (userType) {
+                                "Job Seeker" -> {
+                                    val intent = Intent(applicationContext, JobSeekerDashboard::class.java)
+                                    intent.putExtra("userId", userId)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                "Job Provider" -> {
+                                    val intent = Intent(applicationContext, JobProviderDashboard::class.java)
+                                    intent.putExtra("userId", userId)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                else -> {
+                                    Toast.makeText(
+                                        this,
+                                        "User type is invalid. Please contact support.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                            navigateToDashboard(userId!!)
                         } else {
                             Toast.makeText(
                                 this,
@@ -175,11 +197,44 @@ class UserLogin : AppCompatActivity() {
                     val currentUser = firebaseAuth.currentUser
                     if (currentUser != null) {
                         userId = currentUser.uid
-                        navigateToDashboard(userId!!)
+                        checkIfUserExists(userId!!)
                     }
                 } else {
                     Toast.makeText(this, "Google Sign-In Failed", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+    private fun checkIfUserExists(userId: String) {
+        val userDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+
+        userDatabase.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                navigateToDashboard(userId)
+            } else {
+                // User does not exist, redirect to SelectUserType
+                redirectToSelectUserType()
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Error checking user existence", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun redirectToSelectUserType() {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        val intent = Intent(this, SelectUserType::class.java).apply {
+            putExtra("userId", userId)
+            putExtra("email", account?.email)
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    private fun handleRadioButtonClick(view: View): String? {
+        if (view is RadioButton) {
+            val checked = view.isChecked
+            if (checked) {
+                userType = view.text.toString()
+            }
+        }
+        return userType
     }
 }

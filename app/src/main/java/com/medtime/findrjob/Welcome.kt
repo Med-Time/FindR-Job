@@ -65,10 +65,15 @@ class Welcome : AppCompatActivity() {
             val userType = snapshot.child("userType").value as? String
             when (userType) {
                 "Job Seeker" -> {
-                    startActivity(Intent(this, JobSeekerDashboard::class.java))
+                    val intent = Intent(this, JobSeekerDashboard::class.java)
+                    intent.putExtra("userId", userId)
+                    startActivity(intent)
+
                 }
                 "Job Provider" -> {
-                    startActivity(Intent(this, JobProviderDashboard::class.java))
+                    val intent = Intent(this, JobProviderDashboard::class.java)
+                    intent.putExtra("userId", userId)
+                    startActivity(intent)
                 }
                 else -> {
                     startActivity(Intent(this, UserLogin::class.java))

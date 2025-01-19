@@ -1,14 +1,11 @@
 package com.medtime.findrjob.fragments
 
-
 import android.os.Bundle
-import android.util.Log
 import android.app.AlertDialog
 import android.widget.Toast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -75,7 +72,6 @@ class ApplicationsFragment : Fragment() {
     private fun loadApplicationsFromDatabase() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
-            Log.e("ApplicationsFragment", "User not logged in.")
             emptyView.visibility = View.VISIBLE
             emptyView.text = "Please log in to view your applications."
             applicationsRecyclerView.visibility = View.GONE
@@ -111,14 +107,12 @@ class ApplicationsFragment : Fragment() {
                     // Hide progress bar after data is loaded
                     progressBar.visibility = View.GONE
 
-                    Log.d("ApplicationsFragment", "Application list size after data load: ${applicationList.size}")
 
                     // Notify the adapter that data has been changed
                     applicationAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("ApplicationsFragment", "Error fetching applications", error.toException())
                     emptyView.visibility = View.VISIBLE
                     emptyView.text = "Error loading applications. Please try again later."
                     applicationsRecyclerView.visibility = View.GONE
@@ -162,7 +156,7 @@ class ApplicationsFragment : Fragment() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Delete Application")
         builder.setMessage("Are you sure you want to delete this application? This action cannot be undone.")
-        builder.setIcon(R.drawable.ic_danger) // Set default icon
+        builder.setIcon(R.drawable.ic_dangerous) // Set default icon
 
         builder.setPositiveButton("Yes") { _, _ ->
             deleteApplicationFromDatabase(application, position)

@@ -24,13 +24,17 @@ class JobProviderDashboard : BaseActivity() {
                 loadFragment(ManageJobProvider())
             }
 
+            val userId = intent.getStringExtra("userId")
+
             // Handle navigation
             bottomNavigation.setOnItemSelectedListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.nav_jobs_provider-> loadFragment(ManageJobProvider())
                     R.id.nav_applications_provider-> loadFragment(ApplicationsFragmentProvider())
                     R.id.nav_profile_provider-> {
-                        startActivity(Intent(this, ProviderAccountDetails::class.java))
+                        val profileIntent = Intent(this, ProviderAccountDetails::class.java)
+                        profileIntent.putExtra("userId", userId)
+                        startActivity(profileIntent)
                     }
                 }
                 true

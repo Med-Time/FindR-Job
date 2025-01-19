@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -25,8 +26,9 @@ class JobsFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var jobAdapter: JobAdapter
     private val jobList = mutableListOf<Job>()
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var toolbar: Toolbar
+    private lateinit var emptyView: TextView
+    private lateinit var databaseReference: DatabaseReference
     private lateinit var ignoredJobsReference: DatabaseReference
     private lateinit var appliedJobsReference: DatabaseReference
 
@@ -40,6 +42,7 @@ class JobsFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.title = "Available Jobs"
 
+        emptyView = view.findViewById(R.id.empty_view)
         // Initialize RecyclerView and ProgressBar
         jobsRecyclerView = view.findViewById(R.id.jobs_recycler_view)
         progressBar = view.findViewById(R.id.progress_bar)
@@ -107,10 +110,16 @@ class JobsFragment : Fragment() {
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
-            Toast.makeText(context, "Please log in to view jobs.", Toast.LENGTH_SHORT).show()
+            emptyView.visibility = View.VISIBLE
+            emptyView.text = "Please log in to view your applications."
+            jobsRecyclerView.visibility = View.GONE
             progressBar.visibility = View.GONE
             return
         }
+
+        progressBar.visibility = View.VISIBLE
+        jobsRecyclerView.visibility = View.GONE
+        emptyView.visibility = View.GONE
 
         ignoredJobsReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(ignoredSnapshot: DataSnapshot) {
@@ -158,6 +167,9 @@ class JobsFragment : Fragment() {
 
                                         override fun onCancelled(error: DatabaseError) {
                                             progressBar.visibility = View.GONE
+                                            emptyView.visibility = View.VISIBLE
+                                            emptyView.text = "No applications found."
+                                            jobsRecyclerView.visibility = View.GONE
                                             Toast.makeText(context, "Failed to load provider details: ${error.message}", Toast.LENGTH_SHORT).show()
                                         }
                                     })
@@ -166,6 +178,9 @@ class JobsFragment : Fragment() {
 
                             override fun onCancelled(error: DatabaseError) {
                                 progressBar.visibility = View.GONE
+                                emptyView.visibility = View.VISIBLE
+                                emptyView.text = "No applications found."
+                                jobsRecyclerView.visibility = View.GONE
                                 Toast.makeText(context, "Failed to load jobs: ${error.message}", Toast.LENGTH_SHORT).show()
                             }
                         })
@@ -173,6 +188,9 @@ class JobsFragment : Fragment() {
 
                     override fun onCancelled(error: DatabaseError) {
                         progressBar.visibility = View.GONE
+                        emptyView.visibility = View.VISIBLE
+                        emptyView.text = "No applications found."
+                        jobsRecyclerView.visibility = View.GONE
                         Toast.makeText(context, "Failed to load applied jobs: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
@@ -180,6 +198,9 @@ class JobsFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 progressBar.visibility = View.GONE
+                emptyView.visibility = View.VISIBLE
+                emptyView.text = "No applications found."
+                jobsRecyclerView.visibility = View.GONE
                 Toast.makeText(context, "Failed to load ignored jobs: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })

@@ -38,19 +38,16 @@ class ProviderAccountDetails : AppCompatActivity() {
 
         // Initialize views
         imageViewLogo = findViewById(R.id.imageViewLogo)
-        editTextCompanyName = findViewById(R.id.editTextCompanyName)
-        editTextEmail = findViewById(R.id.editTextEmail)
-        editTextAddress = findViewById(R.id.editTextAddress)
-        editTextIndustryType = findViewById(R.id.editTextIndustryType)
+        editTextCompanyName = findViewById(R.id.textCompanyName)
+        editTextEmail = findViewById(R.id.textEmail)
+        editTextAddress = findViewById(R.id.textAddress)
+        editTextIndustryType = findViewById(R.id.textIndustryType)
         buttonEdit = findViewById(R.id.buttonEdit)
         buttonSave = findViewById(R.id.buttonSave)
         uploadLogoButton = findViewById(R.id.uploadLogoButton)
 
         // Initialize Firebase database and storage references
-        userId = intent.getStringExtra("userId")
-        if (userId.isNullOrEmpty()) {
-            userId = FirebaseAuth.getInstance().currentUser?.uid
-        }
+        userId = intent.getStringExtra("userId")?:FirebaseAuth.getInstance().currentUser?.uid
 
         userDatabase = FirebaseDatabase.getInstance().getReference("Providers").child(userId!!)
         storageReference = FirebaseStorage.getInstance().getReference("ProviderLogos/$userId/logo.jpg")
