@@ -19,7 +19,7 @@ android:layout_margin="8dp">
 
 
     <TextView
-        android:id="@+id/fullName"
+        android:id="@+id/applicantFullName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Full Name"
@@ -29,7 +29,7 @@ android:layout_margin="8dp">
         android:paddingBottom="4dp"/>
 
     <TextView
-        android:id="@+id/address"
+        android:id="@+id/applicantAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Address"
@@ -38,7 +38,7 @@ android:layout_margin="8dp">
         android:paddingBottom="4dp"/>
 
     <TextView
-        android:id="@+id/contactDetail"
+        android:id="@+id/applicantContactDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Contact Detail"
@@ -47,7 +47,7 @@ android:layout_margin="8dp">
         android:paddingBottom="4dp"/>
 
     <TextView
-        android:id="@+id/emailAddress"
+        android:id="@+id/applicantEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Email Address"
@@ -100,7 +100,7 @@ android:layout_margin="8dp">
             android:textColor="#FFFFFF"
             android:backgroundTint="#4CAF50"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"/> <!-- Margin to separate buttons -->
+            android:layout_marginEnd="8dp"/>
 
         <Button
             android:id="@+id/btn_reject"

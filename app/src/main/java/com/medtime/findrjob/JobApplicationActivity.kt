@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.medtime.findrjob.model.ApplicationData
+import com.medtime.findrjob.model.Application
 
 class JobApplicationActivity : AppCompatActivity() {
 
@@ -58,8 +58,6 @@ class JobApplicationActivity : AppCompatActivity() {
         val companyName = intent.getStringExtra("companyName")
 
         userID = FirebaseAuth.getInstance().currentUser?.uid
-
-        Log.d("JobApplicationActivity", "Job details: $jobTitle, $jobId, $companyName")
 
         // Initialize Firebase references
         applicationsDatabase = FirebaseDatabase.getInstance().reference.child("Applications")
@@ -242,7 +240,7 @@ class JobApplicationActivity : AppCompatActivity() {
 
         val id = applicationsDatabase.push().key
         if (id != null) {
-            val applicationData = ApplicationData(jobId, jobTitle,companyName, name, addr, contact, email, resumeUrl)
+            val applicationData = Application(jobId, jobTitle,companyName, name, addr, contact, email, resumeUrl)
             applicationsDatabase.child(userId).child(id).setValue(applicationData).addOnCompleteListener {
                 if (it.isSuccessful) {
                     showApplicationSubmittedDialog()

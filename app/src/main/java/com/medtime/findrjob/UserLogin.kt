@@ -237,4 +237,5 @@ class UserLogin : AppCompatActivity() {
         }
         return userType
     }
+
 }

@@ -53,6 +53,7 @@ class MyApplicationAdapter(
         private val jobCompany: TextView = itemView.findViewById(R.id.jobCompany)
         private val jobDate: TextView = itemView.findViewById(R.id.jobDate)
         val fileButton: Button = itemView.findViewById(R.id.fileButton)
+        private val jobMessage: TextView = itemView.findViewById(R.id.jobMessage)
 
         @SuppressLint("SetTextI18n")
         fun bind(application: ApplicationData) {
@@ -63,9 +64,12 @@ class MyApplicationAdapter(
             applicantAddress.text = "Address : ${application.address ?: "N/A"}"
             jobCompany.text = "Company : ${application.company ?: "Unknown"}"
             jobDate.text = "Applied Date : ${application.date ?: "N/A"}"
+            jobMessage.text = "Message : ${application.message ?: "N/A"}"
 
             // Show file button only if CV URL is present
             fileButton.visibility = if (!application.fileUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
+            jobMessage.visibility = if (application.status != "Pending") View.VISIBLE else View.GONE
+
         }
     }
 

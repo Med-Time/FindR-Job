@@ -7,7 +7,6 @@ import java.util.Locale
 // While Posting the Job, the Provider will fill the form and submit the details.
 
 data class ApplicationData(
-    var applicationId: String? = null,
     val jobId: String?="",
     val jobTitle: String = "",
     val company: String = "",
@@ -17,5 +16,9 @@ data class ApplicationData(
     val email: String? = "",
     val fileUrl: String? = "",
     val date: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
-    val status: String = "Pending"
-)
+    val status: String = "Pending",
+    val message: String = ""
+) {
+    var userID: String = ""
+    var applicationId: String? = null
+}

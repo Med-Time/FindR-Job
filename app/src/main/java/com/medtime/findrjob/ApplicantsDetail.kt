@@ -10,11 +10,9 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.medtime.findrjob.model.ApplicationData
 
 class ApplicantsDetail : BaseActivity() {
 
-    private lateinit var application: ApplicationData
     private lateinit var nameTextView: TextView
     private lateinit var addressTextView: TextView
     private lateinit var contactDetailTextView: TextView
@@ -29,96 +27,88 @@ class ApplicantsDetail : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_applicants_detail)  // Ensure this matches your layout XML
-        setupToolbar()
-        supportActionBar?.title = "Job Details"
-        setSearchQueryListener {  }
+        setContentView(R.layout.activity_applicants_detail)
+        supportActionBar?.title = "Applicant Details"
+        setSearchQueryListener { }
 
-        val applicantId = intent.getStringExtra("applicantId") ?: return
-        val jobId = intent.getStringExtra("jobId") ?: return
-        val jobTitle = intent.getStringExtra("jobTitle") ?: return
+        // Retrieve data from Intent
+        val userID = intent.getStringExtra("userID") ?: return
+        val applicationID = intent.getStringExtra("applicationID") ?: return
         val name = intent.getStringExtra("name") ?: return
         val email = intent.getStringExtra("email") ?: return
         val contact = intent.getStringExtra("contact") ?: return
-        val address = intent.getStringExtra("address") ?:return
+        val address = intent.getStringExtra("address") ?: return
         val resume = intent.getStringExtra("resume") ?: return
 
         // Initialize views
+        nameTextView = findViewById(R.id.applicantFullName)
+        addressTextView = findViewById(R.id.applicantAddress)
+        contactDetailTextView = findViewById(R.id.applicantContactDetail)
+        emailAddressTextView = findViewById(R.id.applicantEmailAddress)
+        reasonEditText = findViewById(R.id.reasonEditText)
+        viewResumeButton = findViewById(R.id.opencv)
+        acceptButton = findViewById(R.id.btn_accept)
+        rejectButton = findViewById(R.id.btn_reject)
 
+        // Populate TextViews with data
+        nameTextView.text = name
+        addressTextView.text = address
+        contactDetailTextView.text = contact
+        emailAddressTextView.text = email
 
-        findViewById<TextView>(R.id.fullName).text = name
-        findViewById<TextView>(R.id.address).text= address
-        findViewById<TextView>(R.id.contactDetail).text = contact
-        findViewById<TextView>(R.id.emailAddress).text = email
-        findViewById<TextView>(R.id.opencv).text = resume
-
-        // Get data from the Intent
-//        nameTextView = findViewById(R.id.fullName)
-//        addressTextView = findViewById(R.id.address)
-//        contactDetailTextView = findViewById(R.id.contactDetail)
-//        emailAddressTextView = findViewById(R.id.emailAddress)
-//        reasonEditText = findViewById(R.id.reasonEditText)
-//        acceptButton = findViewById(R.id.btn_accept)
-//        rejectButton = findViewById(R.id.btn_reject)
-//        viewResumeButton = findViewById(R.id.opencv)
-//
-//        // Populate the TextViews with the applicant data
-//        nameTextView.text = applicantId // You may want to replace this with the actual applicant name
-//        addressTextView.text = address
-//        contactDetailTextView.text = contact
-//        emailAddressTextView.text = email
-
-        // Set up Firebase
+        // Initialize Firebase database reference
         database = FirebaseDatabase.getInstance().getReference("Applications")
 
         // Handle View Resume button click
         viewResumeButton.setOnClickListener {
-            // Replace this with your actual file URL
-            val fileUrl = "" // Get from your data model or database
-            if (fileUrl.isNotEmpty()) {
-                openPdf(fileUrl)
-            } else {
-                Toast.makeText(this, "No resume available.", Toast.LENGTH_SHORT).show()
-            }
+            viewResume(resume)
         }
 
         // Handle Accept button click
         acceptButton.setOnClickListener {
-            // Logic to accept the application
-            database.child(jobId).child(applicantId).child("status").setValue("accepted")
-                .addOnSuccessListener {
-                    val message = reasonEditText.text.toString()
-                    if (message.isNotEmpty()) {
-                        database.child(jobId).child(applicantId).child("message").setValue(message)
-                    }
-                    Toast.makeText(this, "Application accepted.", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to accept application: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+            handleApplicationStatus(userID, applicationID, "Accepted")
         }
 
         // Handle Reject button click
         rejectButton.setOnClickListener {
-            // Logic to reject the application
-            database.child(jobId).child(applicantId).child("status").setValue("rejected")
-                .addOnSuccessListener {
-                    val message = reasonEditText.text.toString()
-                    if (message.isNotEmpty()) {
-                        database.child(jobId).child(applicantId).child("message").setValue(message)
-                    }
-                    Toast.makeText(this, "Application rejected.", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to reject application: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+            handleApplicationStatus(userID, applicationID, "Rejected")
         }
     }
 
-    private fun openPdf(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(url)
+    private fun handleApplicationStatus(userID: String, applicationID: String, status: String) {
+        val message = reasonEditText.text.toString()
+        val applicationRef = database.child(userID).child(applicationID)
+
+        applicationRef.child("status").setValue(status)
+            .addOnSuccessListener {
+                if (message.isNotEmpty()) {
+                    applicationRef.child("message").setValue(message)
+                }
+                Toast.makeText(this, "Application $status successfully.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to $status application: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        finish()
+    }
+
+    private fun viewResume(resumeUrl: String?) {
+        if (resumeUrl != null) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(Uri.parse(resumeUrl), "application/pdf")
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
+                }
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "No PDF viewer app found.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error opening PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "No resume available.", Toast.LENGTH_SHORT).show()
         }
-        startActivity(Intent.createChooser(intent, "Open PDF with"))
     }
 }

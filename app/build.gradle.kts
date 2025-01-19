@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.datastore.core.android)
+    implementation(libs.firebase.messaging)
 
     // Testing Libraries
     testImplementation(libs.junit)

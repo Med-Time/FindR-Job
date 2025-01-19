@@ -93,7 +93,7 @@ class EditJobItem : AppCompatActivity() {
                     // Delete button click listener
                     delbutton.setOnClickListener {
                         // Delete the job post from the database
-                        jobId?.let { id ->
+                        jobId.let { id ->
                             jobPostDatabase.child(id).removeValue()
                                 .addOnSuccessListener {
                                     Toast.makeText(this@EditJobItem, "Job post deleted successfully.", Toast.LENGTH_SHORT).show()

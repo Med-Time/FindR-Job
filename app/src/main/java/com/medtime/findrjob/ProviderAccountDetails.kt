@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -208,9 +209,9 @@ class ProviderAccountDetails : AppCompatActivity() {
     }
 
     private fun loadLogoFromFirebase(logoUrl: String) {
-        // Create a URI from the logo URL and load the image directly into the ImageView
-        val logoUri = Uri.parse(logoUrl)
-        imageViewLogo.setImageURI(logoUri)
+            Glide.with(this)
+                .load(logoUrl)
+                .into(imageViewLogo)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
