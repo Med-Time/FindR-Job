@@ -15,6 +15,25 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/job_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Job Title"
+            android:textSize="28sp"
+            android:gravity="center"
+            android:textStyle="bold|italic"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/jobDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="8/12/2024"
+            android:textSize="16sp"
+            android:gravity="end"
+            android:layout_marginBottom="6dp"/>
+
+        <TextView
             android:id="@+id/fullName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,15 +53,6 @@
             android:paddingBottom="4dp"/>
 
         <TextView
-            android:id="@+id/contactDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contact Detail"
-            android:textSize="16sp"
-            android:textColor="?android:attr/textColorSecondary"
-            android:paddingBottom="4dp"/>
-
-        <TextView
             android:id="@+id/emailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,58 +60,6 @@
             android:textSize="16sp"
             android:textColor="?android:attr/textColorSecondary"
             android:paddingBottom="4dp"/>
-
-<!--        <TextView-->
-<!--            android:id="@+id/cvUrl"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="CV URL"-->
-<!--            android:textSize="16sp"-->
-<!--            android:textColor="?android:attr/textColorSecondary"-->
-<!--            android:paddingBottom="8dp"-->
-<!--            android:autoLink="web"-->
-<!--            android:clickable="true"-->
-<!--            android:focusable="true"/>-->
-
-        <TextView
-            android:id="@+id/company"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="48dp"
-            android:paddingBottom="8dp"
-            android:text="Company Name"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="16sp" />
-
-
-<!--        <Button-->
-<!--            android:id="@+id/btnDownloadCv"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Download CV"-->
-<!--            android:textStyle="bold"-->
-<!--            android:background="@color/black"-->
-<!--            android:paddingHorizontal="16dp"-->
-<!--            android:paddingVertical="8dp"-->
-<!--            android:layout_gravity="center_horizontal"/>-->
-
-
-        <Button
-            android:id="@+id/opencv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View Resume"
-            android:textSize="16sp"
-            android:layout_gravity="center"
-            android:backgroundTint="#5F6866"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="visible" />
-
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

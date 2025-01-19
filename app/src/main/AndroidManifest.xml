@@ -17,6 +17,9 @@
         android:theme="@style/Theme.FindRJob"
         tools:targetApi="34">
         <activity
+            android:name=".ApplicantsDetail"
+            android:exported="false" />
+        <activity
             android:name=".JobDetailsActivity"
             android:exported="false" />
         <activity
@@ -59,18 +62,14 @@
             android:exported="false" />
         <activity
             android:name=".EditJobPostActivity"
-            android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".JobProviderDashboardActivity"-->
-<!--            android:exported="false" />-->
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".JobProviderDashboardActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".JobApplicationActivity"
             android:exported="false" />
         <activity
             android:name=".JobProvider"
-            android:exported="false" />
-        <activity
-            android:name=".JobSeeker"
             android:exported="false" />
         <activity
             android:name=".InsertDataJobProvider"
@@ -89,9 +88,6 @@
             android:exported="false" />
         <activity
             android:name=".UserLogin"
-            android:exported="false" />
-        <activity
-            android:name=".newjobprovider"
             android:exported="false" />
         <activity
             android:name=".JobProviderDashboard"
