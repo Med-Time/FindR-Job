@@ -44,15 +44,29 @@
         android:gravity="end"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Company Name Section -->
-    <TextView
-        android:id="@+id/job_company"
+    <!-- Company Section -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Company Name"
-        android:textSize="24sp"
-        android:textColor="#000000"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/job_company_logo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="Company Logo"
+            android:layout_marginEnd="16dp"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/job_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Company Name"
+            android:textSize="24sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="16dp"/>
+    </LinearLayout>
 
     <!-- Job Description Section -->
     <TextView

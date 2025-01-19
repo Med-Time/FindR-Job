@@ -1,6 +1,7 @@
 package com.medtime.findrjob
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -152,6 +153,13 @@ class GetProviderDetails : AppCompatActivity() {
     databaseReference.child(userID).setValue(providerDetails)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                saveDetailsLocally(
+                    companyName,
+                    email,
+                    address,
+                    industryType,
+                    logoUrl
+                )
                 showToast("Details saved successfully!")
                 navigateToDashboard()
             } else {
@@ -169,5 +177,22 @@ class GetProviderDetails : AppCompatActivity() {
     }
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveDetailsLocally(
+        companyName: String,
+        email: String,
+        address: String,
+        industryType: String,
+        logoUrl: String
+    ) {
+        val sharedPreferences = getSharedPreferences("${userID}Details", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("companyName", companyName)
+        editor.putString("email", email)
+        editor.putString("address", address)
+        editor.putString("industryType", industryType)
+        editor.putString("logoUrl", logoUrl)
+        editor.apply()
     }
 }

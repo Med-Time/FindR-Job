@@ -50,6 +50,7 @@ class JobsFragment : Fragment() {
                 putExtra("jobId", job.id)
                 putExtra("jobTitle", job.title)
                 putExtra("companyName", job.company)
+                putExtra("logoUrl", job.logoUrl)
                 putExtra("jobDescription", job.description)
                 putExtra("jobDate", job.date)
                 putExtra("jobSkills", job.skills)
@@ -137,11 +138,13 @@ class JobsFragment : Fragment() {
                                     providerRef.child(providerID).addListenerForSingleValueEvent(object : ValueEventListener {
                                         override fun onDataChange(providerData: DataSnapshot) {
                                             val companyName = providerData.child("companyName").value.toString()
+                                            val logoUrl = providerData.child("logoUrl").value.toString()
 
                                             for (jobSnapshot in providerSnapshot.children) {
                                                 val job = jobSnapshot.getValue(Job::class.java)
                                                 job!!.id = jobSnapshot.key.toString()
                                                 job.company = companyName
+                                                job.logoUrl = logoUrl
 
                                                 // Exclude ignored or applied jobs
                                                 if (!ignoredJobIds.contains(job.id) && !appliedJobIds.contains(job.id)) {

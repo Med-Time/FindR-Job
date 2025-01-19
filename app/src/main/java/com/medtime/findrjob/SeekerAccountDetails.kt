@@ -1,6 +1,8 @@
 package com.medtime.findrjob
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -86,54 +89,138 @@ class SeekerAccountDetails : BaseActivity() {
     }
 
     private fun fetchUserDetails() {
-        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                user?.let {
-                    editTextName.text = it.fullname
-                    editTextEmail.text = it.email
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("UserDetails", "Error fetching user details: ${error.message}")
-                showToast("Failed to load user details.")
-            }
-        })
+        val sharedPreferences = getSharedPreferences("${userId}Details", Context.MODE_PRIVATE)
 
-        seekerDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val seeker = snapshot.getValue(Seeker::class.java)
-                    seeker?.let {
-                        editTextSkills.text = it.skills
-                        editTextEducation.text = it.education
-                        editTextLocation.text = it.location
-                        editTextPreferences.text = it.preferences
+        // Check for user details in shared preferences
+        val name = sharedPreferences.getString("name", null)
+        val email = sharedPreferences.getString("email", null)
 
-                        if (it.profilePictureUrl.isNotEmpty()) {
-                            loadLogoFromFirebase(it.profilePictureUrl)
-                        } else {
-                            imageViewProfilePicture.setImageResource(R.drawable.man_dummy)
-                        }
-
-                        viewResumeButton.visibility =
-                            if (it.resumeUrl.isNotEmpty()) View.VISIBLE else View.GONE
+        if (name != null && email != null) {
+            // Populate the fields with local data
+            editTextName.text = name
+            editTextEmail.text = email
+        } else {
+            // If not available, fetch from Firebase
+            userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val user = snapshot.getValue(User::class.java)
+                    user?.let {
+                        editTextName.text = it.fullname
+                        editTextEmail.text = it.email
+                        // Save details locally
+                        saveUserDetailsLocally(it.fullname, it.email)
                     }
                 }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("UserDetails", "Error fetching user details: ${error.message}")
+                    showToast("Failed to load user details.")
+                }
+            })
+        }
+
+        fetchSeekerDetails(sharedPreferences)
+    }
+
+    private fun fetchSeekerDetails(sharedPreferences: SharedPreferences) {
+        // Check for seeker details in shared preferences
+        val skills = sharedPreferences.getString("skills", null)
+        val education = sharedPreferences.getString("education", null)
+        val location = sharedPreferences.getString("location", null)
+        val preferences = sharedPreferences.getString("preferences", null)
+        val profilePictureUrl = sharedPreferences.getString("profilePictureUrl", null)
+        val resumeUrl = sharedPreferences.getString("resumeUrl", null)
+
+        if (skills != null && education != null && location != null && preferences != null) {
+            // Populate fields with local data
+            editTextSkills.text = skills
+            editTextEducation.text = education
+            editTextLocation.text = location
+            editTextPreferences.text = preferences
+
+            if (!profilePictureUrl.isNullOrEmpty()) {
+                loadLogoFromFirebase(profilePictureUrl)
+            } else {
+                imageViewProfilePicture.setImageResource(R.drawable.man_dummy)
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("SeekerDetails", "Error fetching seeker details: ${error.message}")
-                showToast("Failed to load seeker details.")
-            }
-        })
+            viewResumeButton.visibility = if (!resumeUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
+        } else {
+            // Fetch details from Firebase if not available locally
+            seekerDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val seeker = snapshot.getValue(Seeker::class.java)
+                        seeker?.let {
+                            editTextSkills.text = it.skills
+                            editTextEducation.text = it.education
+                            editTextLocation.text = it.location
+                            editTextPreferences.text = it.preferences
+
+                            if (!it.profilePictureUrl.isNullOrEmpty()) {
+                                loadLogoFromFirebase(it.profilePictureUrl)
+                            } else {
+                                imageViewProfilePicture.setImageResource(R.drawable.man_dummy)
+                            }
+
+                            viewResumeButton.visibility =
+                                if (!it.resumeUrl.isNullOrEmpty()) View.VISIBLE else View.GONE
+
+                            // Save details locally
+                            saveDetailsLocally(
+                                it.education,
+                                it.location,
+                                it.skills,
+                                it.preferences,
+                                it.profilePictureUrl,
+                                it.resumeUrl
+                            )
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("SeekerDetails", "Error fetching seeker details: ${error.message}")
+                    showToast("Failed to load seeker details.")
+                }
+            })
+        }
     }
+
+    private fun saveUserDetailsLocally(name: String?, email: String?) {
+        val sharedPreferences = getSharedPreferences("${userId}Details", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("name", name)
+        editor.putString("email", email)
+        editor.apply()
+    }
+
+    private fun saveDetailsLocally(
+        education: String,
+        location: String,
+        skills: String,
+        preferences: String,
+        profilePictureUrl: String,
+        resumeUrl: String
+    ) {
+        val sharedPreferences = getSharedPreferences("${userId}Details", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("education", education)
+        editor.putString("location", location)
+        editor.putString("skills", skills)
+        editor.putString("preferences", preferences)
+        editor.putString("profilePictureUrl", profilePictureUrl)
+        editor.putString("resumeUrl", resumeUrl)
+        editor.apply()
+    }
+
 
     private fun loadLogoFromFirebase(logoUrl: String) {
         Glide.with(this)
             .load(logoUrl)
             .placeholder(R.drawable.man_dummy)
             .error(R.drawable.man_dummy2)
+            .apply(RequestOptions.circleCropTransform())
             .into(imageViewProfilePicture)
     }
 

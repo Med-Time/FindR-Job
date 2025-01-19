@@ -1,6 +1,7 @@
 package com.medtime.findrjob
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -32,6 +33,7 @@ class GetSeekerDetails : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storageReference: StorageReference
+    private var userID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +44,7 @@ class GetSeekerDetails : AppCompatActivity() {
         databaseReference = FirebaseDatabase.getInstance().getReference("Seekers")
         storageReference = FirebaseStorage.getInstance().reference
 
-        val userID = intent.getStringExtra("userID") ?: firebaseAuth.currentUser?.uid
+        userID = intent.getStringExtra("userID") ?: firebaseAuth.currentUser?.uid
 
         // Initialize views
         imageViewLogo = findViewById(R.id.imageViewLogo)
@@ -95,11 +97,9 @@ class GetSeekerDetails : AppCompatActivity() {
             }
 
             if (userID != null) {
-                saveSeekerDetailsToFirebase(userID, education, location, skills, preferences)
-            }
-            else{
-                showToast("User not Found")
-                return@setOnClickListener
+                saveSeekerDetails(userID!!, education, location, skills, preferences)
+            } else {
+                showToast("User not found!")
             }
         }
     }
@@ -114,8 +114,8 @@ class GetSeekerDetails : AppCompatActivity() {
         pickResumeLauncher.launch(intent)
     }
 
-    private fun saveSeekerDetailsToFirebase(
-        userID : String,
+    private fun saveSeekerDetails(
+        userID: String,
         education: String,
         location: String,
         skills: String,
@@ -123,6 +123,7 @@ class GetSeekerDetails : AppCompatActivity() {
     ) {
         buttonSubmit.isEnabled = false
         showToast("Saving details...")
+
         val imageRef = storageReference.child("Seekers/$userID/profile_picture.jpg")
         val resumeRef = storageReference.child("Seekers/$userID/resume.pdf")
 
@@ -134,7 +135,6 @@ class GetSeekerDetails : AppCompatActivity() {
                     selectedResumeUri?.let { resumeUri ->
                         resumeRef.putFile(resumeUri).addOnSuccessListener {
                             resumeRef.downloadUrl.addOnSuccessListener { resumeUrl ->
-                                // Save details to database
                                 val seekerDetails = mapOf(
                                     "education" to education,
                                     "location" to location,
@@ -143,30 +143,61 @@ class GetSeekerDetails : AppCompatActivity() {
                                     "profilePictureUrl" to imageUrl.toString(),
                                     "resumeUrl" to resumeUrl.toString()
                                 )
+
+                                // Save to Firebase
                                 databaseReference.child(userID).setValue(seekerDetails)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
+                                            saveDetailsLocally(
+                                                education,
+                                                location,
+                                                skills,
+                                                preferences,
+                                                imageUrl.toString(),
+                                                resumeUrl.toString()
+                                            )
                                             showToast("Details saved successfully!")
                                             navigateToSeekerDashboard()
                                         } else {
                                             showToast("Failed to save details!")
+                                            buttonSubmit.isEnabled = true
                                         }
                                     }
                             }
                         }.addOnFailureListener {
                             showToast("Failed to upload resume!")
+                            buttonSubmit.isEnabled = true
                         }
                     }
                 }
             }.addOnFailureListener {
                 showToast("Failed to upload profile picture!")
+                buttonSubmit.isEnabled = true
             }
         }
     }
 
+    private fun saveDetailsLocally(
+        education: String,
+        location: String,
+        skills: String,
+        preferences: String,
+        profilePictureUrl: String,
+        resumeUrl: String
+    ) {
+        val sharedPreferences = getSharedPreferences("${userID}Details", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("education", education)
+        editor.putString("location", location)
+        editor.putString("skills", skills)
+        editor.putString("preferences", preferences)
+        editor.putString("profilePictureUrl", profilePictureUrl)
+        editor.putString("resumeUrl", resumeUrl)
+        editor.apply()
+    }
+
     private fun navigateToSeekerDashboard() {
         val intent = Intent(this, JobSeekerDashboard::class.java)
-        intent.putExtra("userId", firebaseAuth.currentUser?.uid)
         startActivity(intent)
         finish()
     }

@@ -1,5 +1,6 @@
 package com.medtime.findrjob
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -77,19 +78,47 @@ class ProviderAccountDetails : AppCompatActivity() {
     }
 
     private fun fetchProviderDetails() {
-        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(Provider::class.java)
-                user?.let {
-                    populateProviderDetails(it)
-                }
-            }
+        val sharedPreferences = getSharedPreferences("${userId}Details", Context.MODE_PRIVATE)
+        val companyName = sharedPreferences.getString("companyName", null)
+        val email = sharedPreferences.getString("email", null)
+        val address = sharedPreferences.getString("address", null)
+        val industryType = sharedPreferences.getString("industryType", null)
+        val logoUrl = sharedPreferences.getString("logoUrl", null)
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ProviderAccountDetails, "Failed to load provider details.", Toast.LENGTH_SHORT).show()
-            }
-        })
+        if (companyName != null && email != null && address != null && industryType != null && logoUrl != null) {
+            // Load details from SharedPreferences
+            val provider = Provider(
+                companyName = companyName,
+                email = email,
+                address = address,
+                industryType = industryType,
+                logoUrl = logoUrl
+            )
+            populateProviderDetails(provider)
+        } else {
+            // Fetch details from Firebase if not available locally
+            userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val user = snapshot.getValue(Provider::class.java)
+                    user?.let {
+                        populateProviderDetails(it)
+                        saveDetailsLocally(
+                            it.companyName ?: "",
+                            it.email ?: "",
+                            it.address ?: "",
+                            it.industryType ?: "",
+                            it.logoUrl ?: ""
+                        )
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@ProviderAccountDetails, "Failed to load provider details.", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
+
 
     private fun populateProviderDetails(provider: Provider) {
         editTextCompanyName.setText(provider.companyName)
@@ -127,6 +156,7 @@ class ProviderAccountDetails : AppCompatActivity() {
         userDatabase.setValue(updatedUser).addOnCompleteListener {
             if (it.isSuccessful) {
                 Toast.makeText(this, "Details Saved Successfully!", Toast.LENGTH_SHORT).show()
+                saveDetailsLocally(companyName, email, address, industryType, logoUri.toString())
                 if (logoUri != null) uploadLogo(logoUri!!)
             } else {
                 Toast.makeText(this, "Failed to save details!", Toast.LENGTH_SHORT).show()
@@ -135,6 +165,25 @@ class ProviderAccountDetails : AppCompatActivity() {
 
         enableEditing(false)
     }
+
+    private fun saveDetailsLocally(
+        companyName: String,
+        email: String,
+        address: String,
+        industryType: String,
+        logoUrl: String
+    ) {
+        val sharedPreferences = getSharedPreferences("${userId}Details", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("companyName", companyName)
+        editor.putString("email", email)
+        editor.putString("address", address)
+        editor.putString("industryType", industryType)
+        editor.putString("logoUrl", logoUrl)
+        editor.apply()
+    }
+
+
 
     private fun chooseLogo() {
         val intent = Intent()

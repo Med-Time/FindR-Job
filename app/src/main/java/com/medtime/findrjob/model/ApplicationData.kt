@@ -7,9 +7,10 @@ import java.util.Locale
 // While Posting the Job, the Provider will fill the form and submit the details.
 
 data class ApplicationData(
+    var applicationId: String? = null,
     val jobId: String?="",
-    val jobTitle: String? = "",
-    val company: String? = "",
+    val jobTitle: String = "",
+    val company: String = "",
     val name: String? = "",
     val address: String? = "",
     val contact: String? = "",
