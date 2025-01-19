@@ -5,9 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 
 open class BaseActivity : AppCompatActivity() {
@@ -61,18 +64,23 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun logoutUser() {
-        // Clear all SharedPreferences
-        val sharedPref = getSharedPreferences("IgnoredJobs", MODE_PRIVATE)
-        sharedPref.edit().clear().apply()
+        // Confirm the user wants to logout using AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Yes") { _, _ ->
+                // Sign out the user from FirebaseAuth
+                FirebaseAuth.getInstance().signOut()
 
-        // Sign out the user from FirebaseAuth
-        FirebaseAuth.getInstance().signOut()
-
-        // Navigate to the login screen
-        val logoutIntent = Intent(this, UserLogin::class.java)
-        logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(logoutIntent)
-        finish()
+                // Navigate to the login screen
+                val logoutIntent = Intent(this, UserLogin::class.java)
+                logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(logoutIntent)
+                finish()
+            }
+            .setNegativeButton("No", null)
+            .create()
+        alertDialog.show()
     }
 
 
@@ -89,6 +97,14 @@ open class BaseActivity : AppCompatActivity() {
         emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("testmyprojectagain@gmail.com")) // Default email address
 
         startActivity(Intent.createChooser(emailIntent, "Send Email"))
+    }
+
+    fun setupEdgeInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
     }
 
 }

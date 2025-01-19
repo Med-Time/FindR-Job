@@ -1,17 +1,15 @@
 package com.medtime.findrjob
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.medtime.findrjob.fragments.ApplicationsFragmentProvider
 import com.medtime.findrjob.fragments.JobsFragmentProvider
 import com.medtime.findrjob.fragments.ManageJobProvider
-import com.medtime.findrjob.fragments.ProfileFragmentProvider
 
 
 class JobProviderDashboard : BaseActivity() {
@@ -19,11 +17,7 @@ class JobProviderDashboard : BaseActivity() {
             enableEdgeToEdge()
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_newjobproviderdashboard)
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                insets
-            }
+            setupEdgeInsets()
             val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation_provider)
             val floatingBtn = findViewById<FloatingActionButton>(R.id.fabprovider)
             if (savedInstanceState == null) {
@@ -36,7 +30,7 @@ class JobProviderDashboard : BaseActivity() {
                     R.id.nav_jobs_provider-> loadFragment(ManageJobProvider())
                     R.id.nav_applications_provider-> loadFragment(ApplicationsFragmentProvider())
                     R.id.nav_profile_provider-> {
-                        loadFragment(ProfileFragmentProvider())
+                        startActivity(Intent(this, ProviderAccountDetails::class.java))
                     }
                 }
                 true
@@ -51,6 +45,22 @@ class JobProviderDashboard : BaseActivity() {
             .replace(R.id.fragment_container_provider, fragment)
             .commit()
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Exit App")
+        builder.setMessage("Are you sure you want to exit?")
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            dialog.dismiss()
+            super.onBackPressed() // Close the app
+        }
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss() // Close the dialog
+        }
+        builder.setCancelable(true)
+        builder.create().show()
     }
+
+}
 
 

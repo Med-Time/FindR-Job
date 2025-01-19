@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.medtime.findrjob.R
 import com.medtime.findrjob.model.Application
@@ -31,14 +33,7 @@ class MyApplicationAdapter(
 
         holder.fileButton.setOnClickListener {
             if (!application.fileUrl.isNullOrEmpty()) {
-                // Check if it's a valid URL and handle PDF viewing
-                if (application.fileUrl.endsWith(".pdf", ignoreCase = true)) {
-                    // Open PDF in an external viewer
-                    openPdfFile(holder, application.fileUrl)
-                } else {
-                    // Handle other file types if necessary
-                    openUrl(holder, application.fileUrl)
-                }
+                viewResume(holder, application.fileUrl)
             } else {
                 Toast.makeText(holder.itemView.context, "No file attached to this application.", Toast.LENGTH_SHORT).show()
             }
@@ -47,31 +42,6 @@ class MyApplicationAdapter(
 
     override fun getItemCount(): Int {
         return applications.size
-    }
-
-    // Function to open PDF file in an external viewer
-    private fun openPdfFile(holder: ApplicationViewHolder, pdfUrl: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.setDataAndType(Uri.parse(pdfUrl), "application/pdf")
-        try {
-            holder.itemView.context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.e("MyApplicationAdapter", "Error opening PDF file: $e")
-            Toast.makeText(holder.itemView.context, "Unable to open PDF file.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // Function to open non-PDF URL (can be used for other file types or websites)
-    private fun openUrl(holder: ApplicationViewHolder, url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            holder.itemView.context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.e("MyApplicationAdapter", "Error opening URL: $e")
-            Toast.makeText(holder.itemView.context, "Unable to open the file.", Toast.LENGTH_SHORT).show()
-        }
     }
 
     class ApplicationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -103,5 +73,29 @@ class MyApplicationAdapter(
         applications.clear()
         applications.addAll(newList)
         notifyDataSetChanged()
+    }
+
+    private fun viewResume(holder: ApplicationViewHolder, resumeUrl: String?) {
+        if (resumeUrl != null) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(Uri.parse(resumeUrl), "application/pdf")
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
+                }
+                if (intent.resolveActivity(holder.itemView.context.packageManager) != null) {
+                    holder.itemView.context.startActivity(intent)
+                } else {
+                    showToast(holder, "No PDF viewer app found.")
+                }
+            } catch (e: Exception) {
+                showToast(holder, "Error opening PDF: ${e.message}")
+            }
+        } else {
+            showToast(holder, "No resume available.")
+        }
+    }
+
+    private fun showToast(holder: ApplicationViewHolder, message: String) {
+        Toast.makeText(holder.itemView.context, message, Toast.LENGTH_SHORT).show()
     }
 }

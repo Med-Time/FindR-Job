@@ -54,7 +54,6 @@ class SeekerAccountDetails : BaseActivity() {
 
         // Get userId from intent or current user
         userId = intent.getStringExtra("userId") ?: FirebaseAuth.getInstance().currentUser?.uid
-        Log.d("SeekerAccountDetails", "User ID: $userId")
 
         // Initialize Firebase references
         userDatabase = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
@@ -86,14 +85,6 @@ class SeekerAccountDetails : BaseActivity() {
         imageViewProfilePicture = findViewById(R.id.imageViewProfilePicture)
     }
 
-    private fun setupEdgeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
-
     private fun fetchUserDetails() {
         userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -103,7 +94,6 @@ class SeekerAccountDetails : BaseActivity() {
                     editTextEmail.text = it.email
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e("UserDetails", "Error fetching user details: ${error.message}")
                 showToast("Failed to load user details.")
@@ -256,6 +246,8 @@ class SeekerAccountDetails : BaseActivity() {
         imm.hideSoftInputFromWindow(currentFocusView?.windowToken, 0)
 
         showToast("Changes saved successfully!")
+
+        buttonSave.visibility = View.GONE
     }
 
 

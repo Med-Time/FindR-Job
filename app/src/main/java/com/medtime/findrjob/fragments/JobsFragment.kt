@@ -1,9 +1,7 @@
 package com.medtime.findrjob.fragments
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -15,11 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.medtime.findrjob.AboutUs
 import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.JobDetailsActivity
 import com.medtime.findrjob.R
-import com.medtime.findrjob.UserLogin
 import com.medtime.findrjob.adapters.JobAdapter
 import com.medtime.findrjob.model.Job
 
@@ -31,39 +27,8 @@ class JobsFragment : Fragment() {
     private val jobList = mutableListOf<Job>()
     private lateinit var databaseReference: DatabaseReference
     private lateinit var toolbar: Toolbar
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var ignoredJobsReference: DatabaseReference
     private lateinit var appliedJobsReference: DatabaseReference
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
-        val searchItem = menu.findItem(R.id.search_view)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { filterJobs(it) }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { filterJobs(it) }
-                return true
-            }
-        })
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as? BaseActivity)?.setSearchQueryListener { query ->
-            filterJobs(query)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as? BaseActivity)?.setSearchQueryListener(null)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,15 +62,42 @@ class JobsFragment : Fragment() {
         // Firebase references
         databaseReference = FirebaseDatabase.getInstance().getReference("Job Post")
         appliedJobsReference = FirebaseDatabase.getInstance().getReference("Applications")
-
-        sharedPreferences = requireContext().getSharedPreferences("IgnoredJobs", 0)
+        ignoredJobsReference = FirebaseDatabase.getInstance().getReference("IgnoredJobs")
 
         loadJobsFromFirebase()
 
         return view
     }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.search_view)
+        val searchView = searchItem.actionView as SearchView
 
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { filterJobs(it) }
+                return true
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filterJobs(it) }
+                return true
+            }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? BaseActivity)?.setSearchQueryListener { query ->
+            filterJobs(query)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? BaseActivity)?.setSearchQueryListener(null)
+    }
 
 
     private fun loadJobsFromFirebase() {
@@ -119,59 +111,73 @@ class JobsFragment : Fragment() {
             return
         }
 
-        appliedJobsReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(appliedSnapshot: DataSnapshot) {
-                val appliedJobIds = mutableSetOf<String>()
-                for (application in appliedSnapshot.children) {
-                    val jobId = application.child("jobId").value.toString()
-                    appliedJobIds.add(jobId)
+        ignoredJobsReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(ignoredSnapshot: DataSnapshot) {
+                val ignoredJobIds = mutableSetOf<String>()
+                for (ignoredJob in ignoredSnapshot.children) {
+                    ignoredJob.key?.let { ignoredJobIds.add(it) }
                 }
 
-                databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        jobList.clear()
-                        val providerRef = FirebaseDatabase.getInstance().getReference("Providers")
-
-                        for (providerSnapshot in snapshot.children) {
-                            val providerID = providerSnapshot.key.toString()
-
-                            providerRef.child(providerID).addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(providerData: DataSnapshot) {
-                                    val companyName = providerData.child("companyName").value.toString()
-
-                                    for (jobSnapshot in providerSnapshot.children) {
-                                        val job = jobSnapshot.getValue(Job::class.java)
-                                        job!!.id = jobSnapshot.key.toString()
-                                        job.company = companyName // Add companyName to the job
-
-                                        val ignoredJobs = sharedPreferences.getStringSet("ignoredJobs", emptySet())
-                                        if (!ignoredJobs!!.contains(job.id) && !appliedJobIds.contains(job.id)) {
-                                            jobList.add(job)
-                                        }
-                                    }
-                                    jobAdapter.updateList(jobList)
-                                    progressBar.visibility = View.GONE
-                                    jobsRecyclerView.visibility = View.VISIBLE
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    progressBar.visibility = View.GONE
-                                    Toast.makeText(context, "Failed to load provider details: ${error.message}", Toast.LENGTH_SHORT).show()
-                                }
-                            })
+                appliedJobsReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(appliedSnapshot: DataSnapshot) {
+                        val appliedJobIds = mutableSetOf<String>()
+                        for (application in appliedSnapshot.children) {
+                            val jobId = application.child("jobId").value.toString()
+                            appliedJobIds.add(jobId)
                         }
+
+                        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                jobList.clear()
+                                val providerRef = FirebaseDatabase.getInstance().getReference("Providers")
+
+                                for (providerSnapshot in snapshot.children) {
+                                    val providerID = providerSnapshot.key.toString()
+
+                                    providerRef.child(providerID).addListenerForSingleValueEvent(object : ValueEventListener {
+                                        override fun onDataChange(providerData: DataSnapshot) {
+                                            val companyName = providerData.child("companyName").value.toString()
+
+                                            for (jobSnapshot in providerSnapshot.children) {
+                                                val job = jobSnapshot.getValue(Job::class.java)
+                                                job!!.id = jobSnapshot.key.toString()
+                                                job.company = companyName
+
+                                                // Exclude ignored or applied jobs
+                                                if (!ignoredJobIds.contains(job.id) && !appliedJobIds.contains(job.id)) {
+                                                    jobList.add(job)
+                                                }
+                                            }
+                                            jobAdapter.updateList(jobList)
+                                            progressBar.visibility = View.GONE
+                                            jobsRecyclerView.visibility = View.VISIBLE
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            progressBar.visibility = View.GONE
+                                            Toast.makeText(context, "Failed to load provider details: ${error.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    })
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                progressBar.visibility = View.GONE
+                                Toast.makeText(context, "Failed to load jobs: ${error.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     }
 
                     override fun onCancelled(error: DatabaseError) {
                         progressBar.visibility = View.GONE
-                        Toast.makeText(context, "Failed to load jobs: ${error.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Failed to load applied jobs: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
             }
 
             override fun onCancelled(error: DatabaseError) {
                 progressBar.visibility = View.GONE
-                Toast.makeText(context, "Failed to load applied jobs: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to load ignored jobs: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -29,8 +29,8 @@ class JobAdapter(
         val job = jobList[position]
         holder.jobTitle.text = job.title
         holder.jobCompany.text = job.company
-        holder.jobDate.text = job.date
-        holder.jobSkills.text = job.skills
+        holder.jobDate.text = "Posted on: ${job.date}"
+        holder.jobSkills.text = "Skills Required: ${job.skills}"
 
         holder.itemView.setOnClickListener { onJobClick(job) }
     }
