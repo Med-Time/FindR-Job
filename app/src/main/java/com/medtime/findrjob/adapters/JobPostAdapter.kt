@@ -106,7 +106,7 @@ class JobPostAdapter(
         val title: TextView = itemView.findViewById(R.id.jobTitle)
         val salary: TextView = itemView.findViewById(R.id.jobSalary)
         val skills: TextView = itemView.findViewById(R.id.jobSkills)
-        val date: TextView = itemView.findViewById(R.id.jobDate)
+        val date: TextView = itemView.findViewById(R.id.jobDateProvider)
         val description: TextView = itemView.findViewById(R.id.jobDescription)
         val btnEdit: Button = itemView.findViewById(R.id.btnEdit)
         val btnDelete: Button = itemView.findViewById(R.id.btnDelete)
