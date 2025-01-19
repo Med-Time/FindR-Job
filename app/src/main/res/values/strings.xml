@@ -26,7 +26,6 @@
     <string name="name">FindR Job</string>
     <string name="job_provider">Job Provider</string>
     <string name="job_seeker">Job Seeker</string>
-    <string name="default_web_client_id">AIzaSyDIGRBCb24Xf1zZ1i1L8EsTeYARJl05EpE</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

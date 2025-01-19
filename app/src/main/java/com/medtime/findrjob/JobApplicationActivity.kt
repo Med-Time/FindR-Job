@@ -96,47 +96,84 @@ class JobApplicationActivity : AppCompatActivity() {
 
     // Fetch saved details from SharedPreferences and populate the fields
     private fun fetchSavedDetails(jobTitle: String?, jobId: String?) {
-        val sharedPreferences = getSharedPreferences("UserProfile", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("${userID}Details", Context.MODE_PRIVATE)
         val name = sharedPreferences.getString("name", "")
         val addr = sharedPreferences.getString("location", "")
         val contact = sharedPreferences.getString("contactDetail", "+919XXXXXXXXX")
         val email = sharedPreferences.getString("email", "")
-
+        val savedResumeUrl = sharedPreferences.getString("resumeUrl", null)
 
         if (userID == null) {
             Toast.makeText(this, "User is not logged in.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Fetch additional details from "Seekers" table in Firebase
-        val seekersDatabase = FirebaseDatabase.getInstance().reference.child("Seekers").child(userID!!)
-        seekersDatabase.get().addOnSuccessListener { snapshot ->
-            if (snapshot.exists()) {
-                val resumeUrl = snapshot.child("resumeUrl").value as? String
-                val education = snapshot.child("education").value as? String
-                val skills = snapshot.child("skills").value as? String
+        fullName.setText(name)
+        address.setText(addr)
+        contactDetail.setText(contact)
+        emailAddress.setText(email)
 
-                // Use saved data if available
-                fullName.setText(name)
-                address.setText(addr)
-                contactDetail.setText(contact)
-                emailAddress.setText(email)
-
-                if (!resumeUrl.isNullOrEmpty()) {
-                    fileUri = Uri.parse(resumeUrl)
-                    selectedFileName.text = "Default Resume.pdf"
-                    Toast.makeText(this, "Details and resume populated with saved data.", Toast.LENGTH_SHORT).show()
-                } else {
-                    selectedFileName.text = "No default resume found"
-                    Toast.makeText(this, "Details populated, but no saved resume found.", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "No saved details found in Seekers table. Please enter manually.", Toast.LENGTH_SHORT).show()
-            }
-        }.addOnFailureListener { e ->
-            Toast.makeText(this, "Failed to fetch details: ${e.message}", Toast.LENGTH_SHORT).show()
+        if (!savedResumeUrl.isNullOrEmpty()) {
+            fileUri = Uri.parse(savedResumeUrl)
+            selectedFileName.text = "Default Resume.pdf"
+            Toast.makeText(this, "Details and resume populated with saved data.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Details populated, but no saved resume found.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    // Save the resume URL in SharedPreferences
+    private fun saveResumeUrlToSharedPreferences(resumeUrl: String) {
+        val sharedPreferences = getSharedPreferences("${userID}Details", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("resumeUrl", resumeUrl)
+            apply()
+        }
+    }
+
+    // Method to submit the application
+    private fun submitApplication(jobTitle: String?, jobId: String?, companyName: String) {
+        val name = fullName.text.toString().trim()
+        val addr = address.text.toString().trim()
+        val contact = contactDetail.text.toString().trim()
+        val email = emailAddress.text.toString().trim()
+
+        if (name.isEmpty() || addr.isEmpty() || contact.isEmpty() || email.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields and select a valid CV", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null || jobId == null || jobTitle == null) {
+            Toast.makeText(this, "User or job details are missing.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val resumeUrl = if (selectedFileName.text == "Default Resume.pdf" && fileUri != null) {
+            fileUri.toString() // Use fetched resume URL
+        } else {
+            null // If no default, proceed with upload
+        }
+
+        if (resumeUrl != null) {
+            // Save resumeUrl to SharedPreferences
+            saveResumeUrlToSharedPreferences(resumeUrl)
+            saveApplication(userId, jobId, jobTitle, companyName, name, addr, contact, email, resumeUrl)
+        } else {
+            val fileRef = storageReference.child("${System.currentTimeMillis()}.pdf")
+            fileRef.putFile(fileUri!!).addOnSuccessListener {
+                fileRef.downloadUrl.addOnSuccessListener { uri ->
+                    saveResumeUrlToSharedPreferences(uri.toString()) // Save the new resume URL
+                    saveApplication(userId, jobId, jobTitle, companyName, name, addr, contact, email, uri.toString())
+                }.addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to get file URL: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "CV upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
 
 
     // Method to select a file (CV)
@@ -190,46 +227,6 @@ class JobApplicationActivity : AppCompatActivity() {
         return name
     }
 
-    // Method to submit the application
-    private fun submitApplication(jobTitle: String?, jobId: String?, companyName: String) {
-        val name = fullName.text.toString().trim()
-        val addr = address.text.toString().trim()
-        val contact = contactDetail.text.toString().trim()
-        val email = emailAddress.text.toString().trim()
-
-        if (name.isEmpty() || addr.isEmpty() || contact.isEmpty() || email.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields and select a valid CV", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null || jobId == null || jobTitle == null) {
-            Toast.makeText(this, "User or job details are missing.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val resumeUrl = if (selectedFileName.text == "Default Resume.pdf" && fileUri != null) {
-            fileUri.toString() // Use fetched resume URL
-        } else {
-            null // If no default, proceed with upload
-        }
-
-        if (resumeUrl != null) {
-            saveApplication(userId, jobId, jobTitle,companyName, name, addr, contact, email, resumeUrl)
-        } else {
-            val fileRef = storageReference.child("${System.currentTimeMillis()}.pdf")
-            fileRef.putFile(fileUri!!).addOnSuccessListener {
-                fileRef.downloadUrl.addOnSuccessListener { uri ->
-                    saveApplication(userId, jobId, jobTitle,companyName, name, addr, contact, email, uri.toString())
-                }.addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to get file URL: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener { e ->
-                Toast.makeText(this, "CV upload failed: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
     // Save application data and show dialog
     private fun saveApplication(
         userId: String,
@@ -259,6 +256,7 @@ class JobApplicationActivity : AppCompatActivity() {
     private fun showApplicationSubmittedDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Application Submitted")
+        builder.setIcon(R.drawable.ic_check_circle)
         builder.setMessage("The company will contact you shortly.")
         builder.setPositiveButton("OK") { _, _ ->
             val intent = Intent(this, JobSeekerDashboard::class.java)

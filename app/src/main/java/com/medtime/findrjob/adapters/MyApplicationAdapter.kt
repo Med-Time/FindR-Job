@@ -75,6 +75,16 @@ class MyApplicationAdapter(
         notifyDataSetChanged()
     }
 
+    fun removeApplication(position: Int): ApplicationData? {
+        return if (position >= 0 && position < applications.size) {
+            val removedItem = applications.removeAt(position)
+            notifyItemRemoved(position)
+            removedItem
+        } else {
+            null
+        }
+    }
+
     private fun viewResume(holder: ApplicationViewHolder, resumeUrl: String?) {
         if (resumeUrl != null) {
             try {

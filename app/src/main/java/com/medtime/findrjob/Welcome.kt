@@ -1,13 +1,6 @@
 package com.medtime.findrjob
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapShader
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.Shader
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 
 class Welcome : AppCompatActivity() {
 
@@ -24,13 +19,12 @@ class Welcome : AppCompatActivity() {
         setContentView(R.layout.activity_welcome)
 
         setupEdgeInsets()
-        displayRoundedLogo()
+        loadLogoWithGlide()
 
-        // Navigate to login after a delay
+        // Navigate based on login status after a delay
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, UserLogin::class.java))
-            finish()
-        }, 2000) // Increased delay for better UX
+            navigateBasedOnLoginStatus()
+        }, 2000)
     }
 
     private fun setupEdgeInsets() {
@@ -42,25 +36,49 @@ class Welcome : AppCompatActivity() {
         }
     }
 
-    private fun displayRoundedLogo() {
+    private fun loadLogoWithGlide() {
         val logoImageView = findViewById<ImageView>(R.id.logoImage)
-        val drawable = resources.getDrawable(R.drawable.logo, theme)
-        if (drawable is BitmapDrawable) {
-            val bitmap = drawable.bitmap
-            val roundedBitmap = bitmap.config?.let {
-                Bitmap.createBitmap(
-                    bitmap.width, bitmap.height, it
-                )
+        Glide.with(this)
+            .load(R.drawable.logo) // Replace with your actual logo resource or URL
+            .circleCrop() // Automatically creates rounded images
+            .into(logoImageView)
+    }
+
+    private fun navigateBasedOnLoginStatus() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            // User is logged in, decide based on user type
+            determineUserTypeAndRedirect(currentUser.uid)
+        } else {
+            // User not logged in, navigate to login screen
+            startActivity(Intent(this, UserLogin::class.java))
+            finish()
+        }
+    }
+
+    private fun determineUserTypeAndRedirect(userId: String) {
+        val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+            .getReference("Users")
+            .child(userId)
+
+        database.get().addOnSuccessListener { snapshot ->
+            val userType = snapshot.child("userType").value as? String
+            when (userType) {
+                "Job Seeker" -> {
+                    startActivity(Intent(this, JobSeekerDashboard::class.java))
+                }
+                "Job Provider" -> {
+                    startActivity(Intent(this, JobProviderDashboard::class.java))
+                }
+                else -> {
+                    startActivity(Intent(this, UserLogin::class.java))
+                }
             }
-            val paint = Paint().apply {
-                isAntiAlias = true
-                shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-            }
-            roundedBitmap?.let { Canvas(it) }?.drawRoundRect(
-                RectF(0F, 0F, bitmap.width.toFloat(), bitmap.height.toFloat()),
-                100F, 100F, paint
-            )
-            logoImageView.setImageBitmap(roundedBitmap)
+            finish()
+        }.addOnFailureListener {
+            // Handle error case
+            startActivity(Intent(this, UserLogin::class.java))
+            finish()
         }
     }
 }

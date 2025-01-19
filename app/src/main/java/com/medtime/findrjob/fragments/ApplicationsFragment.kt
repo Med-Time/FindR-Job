@@ -3,16 +3,16 @@ package com.medtime.findrjob.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.app.AlertDialog
+import android.widget.Toast
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +21,8 @@ import com.google.firebase.database.*
 import com.medtime.findrjob.BaseActivity
 import com.medtime.findrjob.R
 import com.medtime.findrjob.adapters.MyApplicationAdapter
-import com.medtime.findrjob.model.Application
 import com.medtime.findrjob.model.ApplicationData
+import androidx.recyclerview.widget.ItemTouchHelper
 
 class ApplicationsFragment : Fragment() {
     private lateinit var applicationsRecyclerView: RecyclerView
@@ -55,6 +55,9 @@ class ApplicationsFragment : Fragment() {
 
         database = FirebaseDatabase.getInstance().getReference("Applications")
         loadApplicationsFromDatabase()
+
+        // Attach ItemTouchHelper for swipe-to-delete functionality
+        attachSwipeHandler()
 
         return view
     }
@@ -93,7 +96,8 @@ class ApplicationsFragment : Fragment() {
                     if (snapshot.exists()) {
                         for (applicationSnapshot in snapshot.children) {
                             val application = applicationSnapshot.getValue(ApplicationData::class.java)
-                            application?.let { applicationList.add(it) }
+                            application!!.applicationId = applicationSnapshot.key
+                            application.let { applicationList.add(it) }
                         }
 
                         emptyView.visibility = View.GONE
@@ -124,10 +128,77 @@ class ApplicationsFragment : Fragment() {
     }
     private fun filterJobs(query: String) {
         val filteredList = applicationList.filter { job ->
-            job.jobTitle?.contains(query, ignoreCase = true) ?: true || // Search by job title
-                    job.company?.contains(query, ignoreCase = true) ?: true|| // Optionally search by company name
-                    job.status?.contains(query, ignoreCase = true) ?: true // Optionally search by skills
+            job.jobTitle.contains(query, ignoreCase = true) || // Search by job title
+                    job.company.contains(query, ignoreCase = true) || // Optionally search by company name
+                    job.status.contains(query, ignoreCase = true) // Optionally search by skills
         }
         applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
+    }
+
+    private fun attachSwipeHandler() {
+        val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val applicationToDelete = applicationAdapter.removeApplication(position)
+
+                applicationToDelete?.let {
+                    showDeleteConfirmationDialog(it, position)
+                }
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(applicationsRecyclerView)
+    }
+
+    private fun showDeleteConfirmationDialog(application: ApplicationData, position: Int) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Delete Application")
+        builder.setMessage("Are you sure you want to delete this application? This action cannot be undone.")
+        builder.setIcon(R.drawable.ic_danger) // Set default icon
+
+        builder.setPositiveButton("Yes") { _, _ ->
+            deleteApplicationFromDatabase(application, position)
+        }
+
+        builder.setNegativeButton("No") { _, _ ->
+            applicationAdapter.notifyItemChanged(position)
+            loadApplicationsFromDatabase()
+        }
+        builder.setCancelable(false)
+        builder.show()
+    }
+
+
+    private fun deleteApplicationFromDatabase(application: ApplicationData, position: Int) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(context, "User not logged in.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val applicationKey = application.applicationId
+        if (applicationKey != null) {
+            database.child(userId).child(applicationKey).removeValue()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(context, "Application deleted.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed to delete application.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            Toast.makeText(context, "Application key not found.", Toast.LENGTH_SHORT).show()
+        }
     }
 }

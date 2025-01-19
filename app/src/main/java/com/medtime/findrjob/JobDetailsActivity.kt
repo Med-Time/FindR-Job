@@ -5,11 +5,14 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -23,11 +26,7 @@ class JobDetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_job_details)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setupEdgeInsets()
         setupToolbar()
         supportActionBar?.title = "Job Details"
         setSearchQueryListener {  }
@@ -36,6 +35,7 @@ class JobDetailsActivity : BaseActivity() {
         val jobId = intent.getStringExtra("jobId")
         val jobTitle = intent.getStringExtra("jobTitle")
         val companyName = intent.getStringExtra("companyName")
+        val logoUrl = intent.getStringExtra("logoUrl")
         val jobDescription = intent.getStringExtra("jobDescription")
         val jobDate = intent.getStringExtra("jobDate")
         val jobSkills = intent.getStringExtra("jobSkills")
@@ -51,6 +51,11 @@ class JobDetailsActivity : BaseActivity() {
         findViewById<TextView>(R.id.job_date).text = "Posted on : $jobDate"
         findViewById<TextView>(R.id.job_skills).text = "Required Skills:\n$jobSkills"
         findViewById<TextView>(R.id.job_salary).text = "Salary: $jobSalary"
+        val imageView = findViewById<ImageView>(R.id.job_company_logo)
+        Glide.with(this)
+            .load(logoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(imageView)
 
         // Handle Apply button
         findViewById<Button>(R.id.btn_apply).setOnClickListener {
@@ -62,17 +67,31 @@ class JobDetailsActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        // Handle Ignore button
         findViewById<Button>(R.id.btn_ignore).setOnClickListener {
             if (jobId != null) {
-                ignoreRef.child(userID).child(jobId).setValue(true)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Job ignored successfully!", Toast.LENGTH_SHORT).show()
-                        finish() // Close the details view
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to ignore job: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                //Create a alert dialog
+                val builder = android.app.AlertDialog.Builder(this)
+                builder.setIcon(R.drawable.ic_danger)
+                builder.setTitle("Confirm Ignore this Job")
+                builder.setMessage("Are you sure ?")
+                builder.setPositiveButton("Yes") { _, _ ->
+                    ignoreRef.child(userID).child(jobId).setValue(true)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Job ignored successfully!", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, JobSeekerDashboard::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to ignore job: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                builder.setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                val dialog: android.app.AlertDialog = builder.create()
+                dialog.show()
             } else {
                 Toast.makeText(this, "Error: User or Job ID is missing!", Toast.LENGTH_SHORT).show()
             }
