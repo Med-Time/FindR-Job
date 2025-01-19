@@ -15,9 +15,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.medtime.findrjob.R
-import com.medtime.findrjob.model.Application
 import com.medtime.findrjob.model.ApplicationData
-import com.medtime.findrjob.model.JobPost
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -40,32 +38,72 @@ class ViewApplicationProviderAdapter(
         holder.address.text = application.address
         holder.contactDetail.text = application.contact
         holder.emailAddress.text = application.email
-        holder.cvUrl.text = application.fileUrl
+        holder.company.text = application.company
 
-        holder.btnDownloadCv.setOnClickListener {
-            downloadAndOpenCv(application.fileUrl)
-        }
-
-        holder.cvUrl.setOnClickListener {
-            val url = application.fileUrl
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
+        holder.btnopencv.setOnClickListener {
+            if (!application.fileUrl.isNullOrEmpty()) {
+                // Check if it's a valid URL and handle PDF viewing
+                if (application.fileUrl.endsWith(".pdf", ignoreCase = true)) {
+                    // Open PDF in an external viewer
+                    openPdfFile(holder, application.fileUrl)
+                } else {
+                    // Handle other file types if necessary
+                    openUrl(holder, application.fileUrl)
+                }
+            } else {
+                Toast.makeText(holder.itemView.context, "No file attached to this application.", Toast.LENGTH_SHORT).show()
             }
-            context.startActivity(intent)
         }
+
+//        holder.btnDownloadCv.setOnClickListener {
+//            downloadAndOpenCv(application.fileUrl)
+//        }
+
+//        holder.cvUrl.setOnClickListener {
+//            val url = application.fileUrl
+//            val intent = Intent(Intent.ACTION_VIEW).apply {
+//                data = Uri.parse(url)
+//            }
+//            context.startActivity(intent)
+//        }
     }
 
     override fun getItemCount(): Int {
         return applicationList.size
     }
 
+    private fun openPdfFile(holder: ViewHolder, pdfUrl: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.setDataAndType(Uri.parse(pdfUrl), "application/pdf")
+        try {
+            holder.itemView.context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("MyApplicationAdapter", "Error opening PDF file: $e")
+            Toast.makeText(holder.itemView.context, "Unable to open PDF file.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Function to open non-PDF URL (can be used for other file types or websites)
+    private fun openUrl(holder: ViewHolder, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            holder.itemView.context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("MyApplicationAdapter", "Error opening URL: $e")
+            Toast.makeText(holder.itemView.context, "Unable to open the file.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fullName: TextView = itemView.findViewById(R.id.fullName)
         val address: TextView = itemView.findViewById(R.id.address)
         val contactDetail: TextView = itemView.findViewById(R.id.contactDetail)
         val emailAddress: TextView = itemView.findViewById(R.id.emailAddress)
-        val cvUrl: TextView = itemView.findViewById(R.id.cvUrl)
-        val btnDownloadCv: Button = itemView.findViewById(R.id.btnDownloadCv)
+        val company: TextView = itemView.findViewById(R.id.company)
+        val btnopencv: Button = itemView.findViewById(R.id.opencv)
     }
 
     private fun downloadAndOpenCv(cvUrl: String?) {

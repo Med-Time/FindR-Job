@@ -51,28 +51,56 @@
             android:textColor="?android:attr/textColorSecondary"
             android:paddingBottom="4dp"/>
 
+<!--        <TextView-->
+<!--            android:id="@+id/cvUrl"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="CV URL"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textColor="?android:attr/textColorSecondary"-->
+<!--            android:paddingBottom="8dp"-->
+<!--            android:autoLink="web"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"/>-->
+
         <TextView
-            android:id="@+id/cvUrl"
+            android:id="@+id/company"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="CV URL"
-            android:textSize="16sp"
-            android:textColor="?android:attr/textColorSecondary"
-            android:paddingBottom="8dp"
             android:autoLink="web"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:minHeight="48dp"
+            android:paddingBottom="8dp"
+            android:text="Company Name"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="16sp" />
+
+
+<!--        <Button-->
+<!--            android:id="@+id/btnDownloadCv"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Download CV"-->
+<!--            android:textStyle="bold"-->
+<!--            android:background="@color/black"-->
+<!--            android:paddingHorizontal="16dp"-->
+<!--            android:paddingVertical="8dp"-->
+<!--            android:layout_gravity="center_horizontal"/>-->
+
 
         <Button
-            android:id="@+id/btnDownloadCv"
+            android:id="@+id/opencv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Download CV"
-            android:textStyle="bold"
-            android:background="@color/black"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:layout_gravity="center_horizontal"/>
+            android:text="View Resume"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:backgroundTint="#5F6866"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="visible" />
+
 
 
     </LinearLayout>
