@@ -1,23 +1,19 @@
-package com.medtime.findrjob.fragments
+package com.medtime.findrjob
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.activity.enableEdgeToEdge
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.medtime.findrjob.R
 import com.medtime.findrjob.model.JobPostData
 import java.text.DateFormat
 import java.util.Date
 
-class JobsFragmentProvider : Fragment() {
+class PostJobActivity : BaseActivity() {
 
     private lateinit var jobTitle: EditText
     private lateinit var jobDescription: EditText
@@ -25,29 +21,25 @@ class JobsFragmentProvider : Fragment() {
     private lateinit var jobSalary: EditText
     private lateinit var postJob: Button
 
-    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var mJobPost: DatabaseReference
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_post_job)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.activity_insertdata_job_provider, container, false)
+        setupEdgeInsets()
 
         // Initialize Firebase
-        firebaseAuth = FirebaseAuth.getInstance()
-        val mUser = firebaseAuth.currentUser
-        val uId = mUser?.uid.orEmpty()
-
+        val uId = intent.getStringExtra("userId") ?: FirebaseAuth.getInstance().currentUser!!.uid
         mJobPost = FirebaseDatabase.getInstance().getReference("Job Post").child(uId)
 
         // Initialize Views
-        jobTitle = view.findViewById(R.id.jobTitle)
-        jobDescription = view.findViewById(R.id.jobDescription)
-        jobSkills = view.findViewById(R.id.jobskill)
-        jobSalary = view.findViewById(R.id.jobSalary)
-        postJob = view.findViewById(R.id.btnPostJob)
+        jobTitle = findViewById(R.id.jobTitle)
+        jobDescription = findViewById(R.id.jobDescription)
+        jobSkills = findViewById(R.id.jobskill)
+        jobSalary = findViewById(R.id.jobSalary)
+        postJob = findViewById(R.id.btnPostJob)
 
         // Handle Post Job Button Click
         postJob.setOnClickListener {
@@ -80,11 +72,16 @@ class JobsFragmentProvider : Fragment() {
                     val jobPostData = JobPostData(title, description, skills, salary, date)
                     mJobPost.child(id).setValue(jobPostData)
 
-                    Toast.makeText(requireContext(), "Successfully Posted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Successfully Posted", Toast.LENGTH_SHORT).show()
+                    finishActivity()
                 }
             }
         }
+    }
 
-        return view
+    private fun finishActivity() {
+        val intent = Intent(this, JobProviderDashboard::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 }

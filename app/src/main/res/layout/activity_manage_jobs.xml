@@ -10,16 +10,17 @@
         android:background="?attr/colorPrimary"
         android:titleTextColor="#FFFFFF"
         android:elevation="4dp" />
+
     <TextView
         android:id="@+id/empty_view_provider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_centerInParent="true"
-        android:text="No applications found."
-        android:textSize="16sp"
+        android:padding="8dp"
+        android:layout_marginTop="100dp"
+        android:text="No jobs found."
         android:textAlignment="center"
-        android:padding="8dp" />
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/progress_bar_provider"
@@ -29,7 +30,7 @@
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/applications_recycler_view_provider"
+        android:id="@+id/jobs_recycler_view_provider"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/custom_toolbar_provider"

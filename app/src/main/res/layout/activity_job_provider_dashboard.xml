@@ -1,38 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/main">
+
+<!-- Fragment Container -->
+<FrameLayout
+    android:id="@+id/fragment_container_provider"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent" >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/custom_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:titleTextColor="#FFFFFF"
-        android:elevation="4dp" />
-
-    <TextView
-        android:id="@+id/empty_view1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="No applications found."
-        android:textSize="16sp"
-        android:textAlignment="center"
-        android:padding="8dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabprovider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="120dp"
+        android:contentDescription="Floating Add Button"
+        android:src="@drawable/baseline_add_24"
+        app:fabSize="normal" />
+</FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewJobApplications"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="95dp" />
 
-</LinearLayout>
+    <!-- Bottom Navigation -->
+<com.google.android.material.bottomnavigation.BottomNavigationView
+    android:id="@+id/bottom_navigation_provider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    app:menu="@menu/bottom_nav_menu_provider"
+    app:itemIconTint="@color/bottom_nav_icon_color"
+    app:itemTextColor="@color/bottom_nav_text_color"
+    app:labelVisibilityMode="labeled" />
+
+
+</RelativeLayout>
+

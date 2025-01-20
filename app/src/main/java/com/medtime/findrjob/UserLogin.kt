@@ -2,6 +2,7 @@ package com.medtime.findrjob
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 
 class UserLogin : AppCompatActivity() {
 
@@ -110,6 +112,7 @@ class UserLogin : AppCompatActivity() {
                                     ).show()
                                 }
                             }
+                            saveFcmTokenToDatabase()
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(
@@ -236,6 +239,35 @@ class UserLogin : AppCompatActivity() {
             }
         }
         return userType
+    }
+
+    fun saveFcmTokenToDatabase() {
+        // Check if user is logged in
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+
+                    // Save token to Firebase Realtime Database
+                    FirebaseDatabase.getInstance()
+                        .getReference("Users")
+                        .child(userId)
+                        .child("fcmToken")
+                        .setValue(token)
+                        .addOnSuccessListener {
+                            Log.d("FCM Token", "Token saved successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("FCM Token", "Failed to save token: ${e.message}")
+                        }
+                } else {
+                    Log.e("FCM Token", "Failed to retrieve token: ${task.exception?.message}")
+                }
+            }
+        } else {
+            Log.e("FCM Token", "User is not logged in")
+        }
     }
 
 }

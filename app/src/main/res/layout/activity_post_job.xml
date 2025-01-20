@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/main"
     android:layout_height="match_parent"
-    tools:context=".EditJobPostActivity"
+    tools:context=".PostJobActivity"
     android:background="@color/white">
 
     <LinearLayout
@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit You Job Post"
+            android:text="Please Fill in the Details to Add a Job"
             android:textSize="20sp"
             android:gravity="center"
             android:textStyle="bold"
@@ -38,7 +38,7 @@
             android:textColor="#000000" />
 
         <EditText
-            android:id="@+id/editJobTitle"
+            android:id="@+id/jobTitle"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@drawable/edittextback"
@@ -57,7 +57,7 @@
             android:textColor="#000000" />
 
         <EditText
-            android:id="@+id/editJobDescription"
+            android:id="@+id/jobDescription"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:background="@drawable/edittextback"
@@ -78,7 +78,7 @@
             android:textColor="#000000" />
 
         <EditText
-            android:id="@+id/editJobSkills"
+            android:id="@+id/jobskill"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@drawable/edittextback"
@@ -97,7 +97,7 @@
             android:textColor="#000000" />
 
         <EditText
-            android:id="@+id/editJobSalary"
+            android:id="@+id/jobSalary"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@drawable/edittextback"
@@ -107,10 +107,10 @@
 
         <!-- Post Job Button -->
         <Button
-            android:id="@+id/btnSaveJob"
+            android:id="@+id/btnPostJob"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="Post Job"
             android:textStyle="bold"
             android:backgroundTint="#27D02E"
             android:textSize="18sp"

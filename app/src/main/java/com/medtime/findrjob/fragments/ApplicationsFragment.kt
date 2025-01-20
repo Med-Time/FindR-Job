@@ -28,7 +28,6 @@ class ApplicationsFragment : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var emptyView: TextView
     private lateinit var progressBar: ProgressBar
-
     private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
@@ -36,6 +35,7 @@ class ApplicationsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_applications, container, false)
+
         // Initialize toolbar
         toolbar = view.findViewById(R.id.custom_toolbar)
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
@@ -46,18 +46,17 @@ class ApplicationsFragment : Fragment() {
         progressBar = view.findViewById(R.id.progress_bar) // Progress bar
 
         applicationsRecyclerView.layoutManager = LinearLayoutManager(context)
-        // Initialize the adapter with an empty list
         applicationAdapter = MyApplicationAdapter(applicationList)
         applicationsRecyclerView.adapter = applicationAdapter
 
         database = FirebaseDatabase.getInstance().getReference("Applications")
         loadApplicationsFromDatabase()
 
-        // Attach ItemTouchHelper for swipe-to-delete functionality
         attachSwipeHandler()
 
         return view
     }
+
     override fun onResume() {
         super.onResume()
         (activity as? BaseActivity)?.setSearchQueryListener { query ->
@@ -69,6 +68,7 @@ class ApplicationsFragment : Fragment() {
         super.onPause()
         (activity as? BaseActivity)?.setSearchQueryListener(null)
     }
+
     private fun loadApplicationsFromDatabase() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
@@ -79,7 +79,6 @@ class ApplicationsFragment : Fragment() {
             return
         }
 
-        // Show progress bar while data is being fetched
         progressBar.visibility = View.VISIBLE
         applicationsRecyclerView.visibility = View.GONE
         emptyView.visibility = View.GONE
@@ -87,15 +86,13 @@ class ApplicationsFragment : Fragment() {
         database.child(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    applicationList.clear() // Clear the existing data before adding new data
-
+                    applicationList.clear()
                     if (snapshot.exists()) {
                         for (applicationSnapshot in snapshot.children) {
                             val application = applicationSnapshot.getValue(ApplicationData::class.java)
                             application!!.applicationId = applicationSnapshot.key
-                            application.let { applicationList.add(it) }
+                            applicationList.add(application)
                         }
-
                         emptyView.visibility = View.GONE
                         applicationsRecyclerView.visibility = View.VISIBLE
                     } else {
@@ -103,12 +100,7 @@ class ApplicationsFragment : Fragment() {
                         emptyView.text = "No applications found."
                         applicationsRecyclerView.visibility = View.GONE
                     }
-
-                    // Hide progress bar after data is loaded
                     progressBar.visibility = View.GONE
-
-
-                    // Notify the adapter that data has been changed
                     applicationAdapter.notifyDataSetChanged()
                 }
 
@@ -120,13 +112,14 @@ class ApplicationsFragment : Fragment() {
                 }
             })
     }
+
     private fun filterJobs(query: String) {
         val filteredList = applicationList.filter { job ->
-            job.jobTitle.contains(query, ignoreCase = true) || // Search by job title
-                    job.company.contains(query, ignoreCase = true) || // Optionally search by company name
-                    job.status.contains(query, ignoreCase = true) // Optionally search by skills
+            job.jobTitle.contains(query, ignoreCase = true) ||
+                    job.company.contains(query, ignoreCase = true) ||
+                    job.status.contains(query, ignoreCase = true)
         }
-        applicationAdapter.updateList(filteredList) // Update the adapter with the filtered list
+        applicationAdapter.updateList(filteredList)
     }
 
     private fun attachSwipeHandler() {
@@ -142,7 +135,6 @@ class ApplicationsFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val applicationToDelete = applicationAdapter.removeApplication(position)
-
                 applicationToDelete?.let {
                     showDeleteConfirmationDialog(it, position)
                 }
@@ -156,10 +148,11 @@ class ApplicationsFragment : Fragment() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Delete Application")
         builder.setMessage("Are you sure you want to delete this application? This action cannot be undone.")
-        builder.setIcon(R.drawable.ic_dangerous) // Set default icon
+        builder.setIcon(R.drawable.ic_dangerous)
 
         builder.setPositiveButton("Yes") { _, _ ->
             deleteApplicationFromDatabase(application, position)
+            triggerNotification(application)
         }
 
         builder.setNegativeButton("No") { _, _ ->
@@ -169,7 +162,6 @@ class ApplicationsFragment : Fragment() {
         builder.setCancelable(false)
         builder.show()
     }
-
 
     private fun deleteApplicationFromDatabase(application: ApplicationData, position: Int) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -194,5 +186,18 @@ class ApplicationsFragment : Fragment() {
         } else {
             Toast.makeText(context, "Application key not found.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun triggerNotification(application: ApplicationData) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val notificationData = mapOf(
+            "title" to "Application Deleted",
+            "message" to "Your application for ${application.jobTitle} has been deleted.",
+            "applicationId" to application.applicationId
+        )
+
+        val notificationReference = FirebaseDatabase.getInstance().getReference("Notifications")
+        notificationReference.child(userId).push().setValue(notificationData)
     }
 }

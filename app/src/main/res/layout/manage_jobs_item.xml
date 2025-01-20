@@ -7,8 +7,7 @@
     android:layout_margin="10dp"
 
     app:cardCornerRadius="25dp"
-    android:elevation="35dp"
-    tools:context=".EditJobItem">
+    android:elevation="35dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +26,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
-            android:id="@+id/jobDateProvider"
+            android:id="@+id/jobDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"

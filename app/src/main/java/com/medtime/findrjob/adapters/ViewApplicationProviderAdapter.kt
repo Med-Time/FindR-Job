@@ -14,7 +14,7 @@ class ViewApplicationProviderAdapter(
 ) : RecyclerView.Adapter<ViewApplicationProviderAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.itemjobapplication, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item_job_application, parent, false)
         return ViewHolder(view)
     }
 

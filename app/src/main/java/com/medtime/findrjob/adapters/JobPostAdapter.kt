@@ -24,7 +24,7 @@ class JobPostAdapter(
 ) : RecyclerView.Adapter<JobPostAdapter.JobPostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobPostViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.activity_edit_job_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.manage_jobs_item, parent, false)
         return JobPostViewHolder(view)
     }
 
@@ -106,7 +106,7 @@ class JobPostAdapter(
         val title: TextView = itemView.findViewById(R.id.jobTitle)
         val salary: TextView = itemView.findViewById(R.id.jobSalary)
         val skills: TextView = itemView.findViewById(R.id.jobSkills)
-        val date: TextView = itemView.findViewById(R.id.jobDateProvider)
+        val date: TextView = itemView.findViewById(R.id.jobDate)
         val description: TextView = itemView.findViewById(R.id.jobDescription)
         val btnEdit: Button = itemView.findViewById(R.id.btnEdit)
         val btnDelete: Button = itemView.findViewById(R.id.btnDelete)

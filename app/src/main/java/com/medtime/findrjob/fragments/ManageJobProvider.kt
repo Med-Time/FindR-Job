@@ -33,14 +33,16 @@ class ManageJobProvider : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var valueEventListener: ValueEventListener
     private lateinit var toolbar:Toolbar
+    private lateinit var emptyView: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.activity_job_provider_dashboard, container, false)
-        toolbar = view.findViewById(R.id.custom_toolbar)
+        val view = inflater.inflate(R.layout.activity_manage_jobs, container, false)
+        toolbar = view.findViewById(R.id.custom_toolbar_provider)
+        emptyView = view.findViewById(R.id.empty_view_provider)
 
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.title = "Your Jobs"
@@ -48,12 +50,12 @@ class ManageJobProvider : Fragment() {
         jobsDatabase = FirebaseDatabase.getInstance().getReference("Job Post")
 
         // Initialize UI elements
-        recyclerView = view.findViewById(R.id.recyclerViewJobApplications)
+        recyclerView = view.findViewById(R.id.jobs_recycler_view_provider)
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = JobPostAdapter(jobList, requireContext(), jobsDatabase)
         recyclerView.adapter = adapter
 
-        progressBar = view.findViewById(R.id.progressBar)
+        progressBar = view.findViewById(R.id.progress_bar_provider)
         progressBar.visibility = View.VISIBLE
 
         // Fetch job posts for the current provider
@@ -101,6 +103,8 @@ class ManageJobProvider : Fragment() {
                 if (jobList.isEmpty()) {
                     Toast.makeText(requireContext(), "No jobs found.", Toast.LENGTH_SHORT).show()
                 }
+                recyclerView.visibility = if (jobList.isEmpty()) View.GONE else View.VISIBLE
+                emptyView.visibility = if (jobList.isEmpty()) View.VISIBLE else View.GONE
                 adapter.notifyDataSetChanged() // Notify the adapter that data has changed
             }
 

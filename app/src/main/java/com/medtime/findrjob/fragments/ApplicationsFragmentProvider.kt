@@ -5,11 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.ProgressBar
-import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -36,16 +34,16 @@ class ApplicationsFragmentProvider : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.activity_job_provider_dashboard, container, false)
-        toolbar = view.findViewById(R.id.custom_toolbar)
+        val view = inflater.inflate(R.layout.fragment_applications_provider, container, false)
+        toolbar = view.findViewById(R.id.custom_toolbar_provider)
 
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.title = "Your Jobs"
+        (activity as AppCompatActivity).supportActionBar?.title = "Applications for Jobs"
 
         // Initialize views
-        applicationsRecyclerView = view.findViewById(R.id.recyclerViewJobApplications)
-        emptyView = view.findViewById(R.id.empty_view1)
-        progressBar = view.findViewById(R.id.progressBar)
+        applicationsRecyclerView = view.findViewById(R.id.applications_recycler_view_provider)
+        emptyView = view.findViewById(R.id.empty_view_provider)
+        progressBar = view.findViewById(R.id.progress_bar_provider)
 
         // Setup RecyclerView
         applicationsRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -100,7 +98,6 @@ class ApplicationsFragmentProvider : Fragment() {
         databaseApplications.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(applicationSnapshot: DataSnapshot) {
                 applicationList.clear()
-
                 for (userSnapshot in applicationSnapshot.children) {
                     val userID = userSnapshot.key?: continue
                     for (application in userSnapshot.children) {
@@ -114,15 +111,14 @@ class ApplicationsFragmentProvider : Fragment() {
                         }
                     }
                 }
-
                 if (applicationList.isEmpty()) {
+                    emptyView.visibility = View.VISIBLE
                     displayEmptyState("No applications found.")
                 } else {
                     applicationsRecyclerView.visibility = View.VISIBLE
                     emptyView.visibility = View.GONE
+                    progressBar.visibility = View.GONE
                 }
-
-                progressBar.visibility = View.GONE
                 applicationAdapter.notifyDataSetChanged()
             }
 
@@ -134,7 +130,6 @@ class ApplicationsFragmentProvider : Fragment() {
 
     private fun displayEmptyState(message: String) {
         emptyView.text = message
-        emptyView.visibility = View.VISIBLE
         applicationsRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
     }
@@ -150,15 +145,6 @@ class ApplicationsFragmentProvider : Fragment() {
             putExtra("resume", application.fileUrl)
         }
         startActivity(intent)
-    }
-    private fun filterApplications(status: String?) {
-        val filteredList = if (status == null || status == "All") {
-            applicationList
-        } else {
-            applicationList.filter { it.status == status }
-        }
-        applicationAdapter.updateList(filteredList)
-        applicationAdapter.notifyDataSetChanged()
     }
 
 }

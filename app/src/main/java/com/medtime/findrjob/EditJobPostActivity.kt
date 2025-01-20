@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
@@ -14,9 +15,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class EditJobPostActivity : AppCompatActivity() {
+class EditJobPostActivity : BaseActivity() {
 
-    private lateinit var toolbar: Toolbar
     private lateinit var jobTitle: EditText
     private lateinit var jobDescription: EditText
     private lateinit var jobSkills: EditText
@@ -26,13 +26,10 @@ class EditJobPostActivity : AppCompatActivity() {
     private lateinit var providerId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_job_post)
-
-        toolbar = findViewById(R.id.custom_toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "Edit Job Post"
-
+        setupEdgeInsets()
         jobTitle = findViewById(R.id.editJobTitle)
         jobDescription = findViewById(R.id.editJobDescription)
         jobSkills = findViewById(R.id.editJobSkills)
